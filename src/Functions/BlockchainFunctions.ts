@@ -4,6 +4,7 @@ import { Contract } from "ethers";
 import AssetToken from "./../../abi/AssetToken.json"
 import NFTDex from "./../../abi/NFTDex.json"
 import { JsonRpcSigner } from "ethers";
+import { ContractTransactionResponse } from "ethers";
 
 export async function getTokenBalance(signer:Signer, accountAddress:string, tokenAddress:string) : Promise<{tokens:number, ownership:number}>{
 	try{
@@ -48,8 +49,40 @@ export async function getMainForTokens(signer:Signer, dexAddress:string, ethAmou
 		const dexContract:Contract = new ethers.Contract(dexAddress, NFTDex.abi, signer)
 		
 		const tokensInWei = await dexContract.getMainForNativeTokens(ethers.toBigInt(ethInWei))
-		const returnTokensInWei = ethers.formatUnits(tokensInWei)
-		return returnTokensInWei
+		const returnTokens = ethers.formatUnits(tokensInWei)
+		return returnTokens
+	}catch(error){
+		console.log(error)
+		throw(error)
+	}
+
+}
+export async function swapTokensForMain(signer:JsonRpcSigner, dexAddress:string, tokens:string) : Promise<boolean>{
+	try{
+		const tokensInWei = ethers.parseUnits(tokens)
+		const dexContract:Contract = new ethers.Contract(dexAddress, NFTDex.abi, signer)
+		const ethInWei:ContractTransactionResponse = await dexContract.swapNativeForMain(ethers.toBigInt(tokensInWei))
+		const receipt = await ethInWei.wait()
+		
+		return true
+	}catch(error){
+		console.log(error)
+		throw(error)
+	}
+
+}
+
+export async function swapMainForTokens(signer:Signer, dexAddress:string, ethAmount:string) : Promise<boolean>{
+	try{
+		const ethInWei = ethers.parseUnits(ethAmount)
+		const dexContract:Contract = new ethers.Contract(dexAddress, NFTDex.abi, signer)
+		const contractFunctionCallMetadata = {
+			value: ethInWei
+		}
+		const tokensInWei:ContractTransactionResponse = await dexContract.swapMainforNative(contractFunctionCallMetadata)
+		const receipt = await tokensInWei.wait()
+		
+		return true
 	}catch(error){
 		console.log(error)
 		throw(error)

@@ -5,7 +5,7 @@ import { JsonRpcSigner } from "ethers";
 import { ethers, BrowserProvider, TransactionRequest } from "ethers";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
-import { getMainForTokens, getTokenBalance, getTokensForMain } from "@/Functions/BlockchainFunctions";
+import { getMainForTokens, getTokenBalance, getTokensForMain, swapMainForTokens, swapTokensForMain } from "@/Functions/BlockchainFunctions";
 import { getListOfNfts, getNft } from "@/Functions/SupabaseFuncs";
 import { useParams } from "next/navigation";
 import { NFTInfo } from "../../../../types/general";
@@ -24,15 +24,19 @@ export default function NFTProfile() {
 	const [nft, setNft] = useState<Database['public']['Tables']['nfts']['Row'] | null>(null)
 	const [ethValue, setEthValue] = useState<string>("")
 	const [tokenValue, setTokenValue] = useState<string>("")
-	const [type, setType] = useState<"native" | "token">("native")
+	const [type, setType] = useState<"native" | "eth">("native")
 	const [current, setCurrent] = useState<string>("")
 	const { debounce } = useDebounce()
 	const { provider } = useContext(ProviderContext)
+	const [swapping, setSwapping] = useState<boolean>(false)
+
+
 	const handleNativeChange = async (newValue: string) => {
 		if (emptyValue(newValue)) return
 		let signer = await provider?.getSigner() as JsonRpcSigner
 		const ethReturn = await getTokensForMain(signer, nft?.dex_address ?? "", newValue)
 		setEthValue(ethReturn)
+		setType("native")
 	}
 	const handleEthChange = async (newValue: string) => {
 		if (emptyValue(newValue)) return
@@ -41,6 +45,7 @@ export default function NFTProfile() {
 		let signer = await provider?.getSigner() as JsonRpcSigner
 		const tokenReturn = await getMainForTokens(signer, nft?.dex_address ?? "", newValue)
 		setTokenValue(tokenReturn)
+		setType("eth")
 
 	}
 	const debouncedNativeSearch = debounce(handleNativeChange, 1500)
@@ -80,6 +85,30 @@ export default function NFTProfile() {
 		debouncedNativeSearch(value)
 	}
 
+	async function swap() {
+		try {
+			//Null checks
+			setSwapping(true)
+			if (nft?.dex_address && provider) {
+
+				let signer = await provider?.getSigner() as JsonRpcSigner
+				let res;
+				if (type === "native") {
+
+					res = await swapTokensForMain(signer, nft?.dex_address, tokenValue)
+				} else {
+
+					res = await swapMainForTokens(signer, nft?.dex_address, ethValue)
+				}
+				console.log(res)
+				setSwapping(false)
+			}else{
+				throw("provider missing or nft information missing")
+			}
+		} catch (swapError) {
+			console.log(swapError)
+		}
+	}
 
 	return (
 		<main className="flex bg-white min-h-screen flex-col items-center justify-between p-20 px-16 xl:px-48">
@@ -96,7 +125,7 @@ export default function NFTProfile() {
 
 				</div>
 				<div className="h-full  bg-white rounded-lg">
-					{nft && <NFTSummary nft={nft} />}
+					{nft && <NFTSummary nft={nft} swapping = {swapping} />}
 				</div>
 				<div className="h-full bg-back border-t border-gray-300 gap-6 flex justify-between  col-span-3 row-span-1   bg">
 					<div className="flex flex-col py-4 gap-4 w-2/5">
@@ -112,7 +141,12 @@ export default function NFTProfile() {
 							/>
 
 						</div>
-						<div className=" flex justify-center items-center">{nft?.token_symbol && <span className="text-text text-sm">{nft?.token_symbol && nft?.token_symbol + ' -> ' + 'ETH'}</span>}</div>
+						<div className=" flex justify-center items-center">{nft?.token_symbol &&
+							<span className="text-text text-sm">
+
+								{nft?.token_symbol && (type === "native" ? nft?.token_symbol + ' -> ' + 'ETH' : 'ETH' + ' -> ' + nft?.token_symbol)}
+
+							</span>}</div>
 						<div className="bg-[#f9f9f9] p-4 rounded-lg ">
 							<input
 								type="number"
@@ -130,9 +164,9 @@ export default function NFTProfile() {
 
 							<div className="flex gap-2 w-full justify-end">
 								{
-									nft?.token_symbol && <span className="rounded-lg text-white text-center w-full p-3 py-2 bg-button-secondary">
+									nft?.token_symbol && <button onClick={() => {swap() }} disabled={swapping} className="rounded-lg disabled:opacity-30 text-white text-center w-full p-3 py-2 bg-button-secondary cursor-pointer">
 										Swap {nft?.token_symbol + ' / ' + 'ETH'}
-									</span>
+									</button>
 								}
 
 
@@ -145,22 +179,25 @@ export default function NFTProfile() {
 							</div> */}
 						</div>
 					</div>
-					<div className="flex flex-col py-4 gap-4 h-3/5 w-2/5 overflow-y-scroll">
+					<div className="flex flex-col py-4 gap-4 h-3/5 w-2/5 ">
 
 						<div className="px-4 sm:px-0">
 							<h3 className="text-base font-semibold leading-7 text-gray-500">List of Owners</h3>
 							<p className="mt-1 max-w-2xl text-sm leading-6 text-gray-900">NFT details and information.</p>
 						</div>
+						<div className="overflow-y-scroll">
+							{nft?.fractional_owners && nft.fractional_owners.map((owner, index) => {
+								return (
+									<div key={index}>
+										<span className="p-1">
+											<Copy text={owner} length={8} />
+										</span>
 
-						{nft?.fractional_owners && nft.fractional_owners.map((owner, index) => {
-							return (
-								<div key={index}>
-									<span>
-										<Copy text={owner} length={8}/>
-									</span>
-								</div>
-							)
-						})}
+									</div>
+								)
+							})}
+						</div>
+
 
 
 					</div>

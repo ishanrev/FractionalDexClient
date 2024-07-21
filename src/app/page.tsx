@@ -86,7 +86,7 @@ export default function Home() {
     try {
       const signer = await provider?.getSigner()
       if (!signer) {
-        throw ("no digner avaailable")
+        throw ("no signer avaailable")
       }
       const nfts = await getListOfNfts(await signer.getAddress())
       console.log(nfts)

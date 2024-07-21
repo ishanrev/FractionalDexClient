@@ -8,7 +8,7 @@ export function emptyValue(value:string):boolean{
   return value==="" || value==="0"
 }
 
-export function truncateAddress(baseAddress:string, stopLength:number){
+export function truncateAddress(baseAddress:string, stopLength:number):string{
     if (typeof baseAddress !== 'string' || baseAddress.length < 10) {
       throw new Error('Invalid address format');
     }
@@ -20,3 +20,16 @@ export function truncateAddress(baseAddress:string, stopLength:number){
     // Combine them with '...'
     return `${start}...${end}`;
 }
+
+export function truncateValue(value:string, sliceNum = 4):string{
+  if (typeof value !== 'string' ) {
+    throw new Error('Invalid address format');
+  }
+
+  // Extract the first 4 characters and the last 4 characters
+  const start = value.slice(0, sliceNum);
+
+  // Combine them with '...'
+  return `${start}`;
+}
+

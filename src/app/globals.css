@@ -36,3 +36,26 @@ body {
 input:focus {
   outline: none;
 }
+
+.text-huge {
+  font-size: 2.125rem /* 18px */;
+  line-height: 2.75rem /* 28px */;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+*::-webkit-scrollbar-track {
+  background: none;
+  /* background-color: #bcc5c9af; */
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  height: 30px;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+}
