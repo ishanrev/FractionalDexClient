@@ -15,7 +15,9 @@ const config: Config = {
       },
       colors: {
         background: {
-          DEFAULT: '#1B1F3B', // Midnight Blue
+          DEFAULT: '#2A2A2A  ', // Midnight Blue
+          midnight: '#1B1F3B', // Midnight Blue
+
           coal: '#121212',
 
         },
