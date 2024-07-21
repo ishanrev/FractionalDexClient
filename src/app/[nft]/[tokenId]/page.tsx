@@ -8,7 +8,7 @@ import { useContext, useEffect, useState } from "react";
 import { getMainForTokens, getTokenBalance, getTokensForMain, swapMainForTokens, swapTokensForMain } from "@/Functions/BlockchainFunctions";
 import { getListOfNfts, getNft } from "@/Functions/SupabaseFuncs";
 import { useParams } from "next/navigation";
-import { NFTInfo } from "../../../../types/general";
+import { NFTInfo, Transaction } from "../../../../types/general";
 import { Database } from "../../../../types/supabase";
 import { emptyValue, toIPFS } from "@/Functions/General";
 import SwapToken from "@/app/Components/Dex/SwapToken";
@@ -16,6 +16,7 @@ import { useDebounce } from "@/Functions/Hooks";
 import { ProviderContext } from "@/Functions/Contexts";
 import NFTSummary from "@/app/Components/Dex/NFTSummary";
 import Copy from "@/app/Components/General/Copy";
+import NFTNotification from "@/app/Components/Dex/NFTNotification";
 declare var window: any
 
 
@@ -29,7 +30,10 @@ export default function NFTProfile() {
 	const { debounce } = useDebounce()
 	const { provider } = useContext(ProviderContext)
 	const [swapping, setSwapping] = useState<boolean>(false)
+	const [transaction, setTransaction] = useState<Transaction>({
+		success: false,
 
+	})
 
 	const handleNativeChange = async (newValue: string) => {
 		if (emptyValue(newValue)) return
@@ -102,16 +106,25 @@ export default function NFTProfile() {
 				}
 				console.log(res)
 				setSwapping(false)
-			}else{
-				throw("provider missing or nft information missing")
+				setTransaction({
+					success: true
+				})
+			} else {
+				throw ("provider missing or nft information missing")
 			}
 		} catch (swapError) {
 			console.log(swapError)
+			setTransaction({
+				success: false,
+				error: swapError as string
+			})
 		}
 	}
 
 	return (
 		<main className="flex bg-white min-h-screen flex-col items-center justify-between p-20 px-16 xl:px-48">
+
+			{nft && <NFTNotification swapping={swapping} tokenValue={tokenValue} ethValue={ethValue} type={type} transaction={transaction} nft={nft} />}
 			<div className="mt-8 grid   gap-8 w-full h-[80vh] 2xl:max-w-[70%]">
 				<div className="  flex flex-col justify-start items-center  w-full  rounded-lg">
 
@@ -125,7 +138,7 @@ export default function NFTProfile() {
 
 				</div>
 				<div className="h-full  bg-white rounded-lg">
-					{nft && <NFTSummary nft={nft} swapping = {swapping} />}
+					{nft && <NFTSummary nft={nft} swapping={swapping} />}
 				</div>
 				<div className="h-full bg-back border-t border-gray-300 gap-6 flex justify-between  col-span-3 row-span-1   bg">
 					<div className="flex flex-col py-4 gap-4 w-2/5">
@@ -164,7 +177,7 @@ export default function NFTProfile() {
 
 							<div className="flex gap-2 w-full justify-end">
 								{
-									nft?.token_symbol && <button onClick={() => {swap() }} disabled={swapping} className="rounded-lg disabled:opacity-30 text-white text-center w-full p-3 py-2 bg-button-secondary cursor-pointer">
+									nft?.token_symbol && <button onClick={() => { swap() }} disabled={swapping} className="rounded-lg disabled:opacity-30 text-white text-center w-full p-3 py-2 bg-button-secondary cursor-pointer">
 										Swap {nft?.token_symbol + ' / ' + 'ETH'}
 									</button>
 								}

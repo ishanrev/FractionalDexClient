@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^2.1.2",
     "@heroicons/react": "^2.1.5",
     "@supabase/supabase-js": "^2.44.4",
     "ethers": "^6.13.1",
