@@ -4,6 +4,7 @@ import "./globals.css";
 import { useState } from "react";
 import { BrowserProvider } from "ethers";
 import { ProviderProvider } from "@/Functions/Contexts";
+import Navbar from "./Components/General/Navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +24,16 @@ export default function RootLayout({
     <html lang="en">
       <ProviderProvider>
 
-        <body className={inter.className}>{children}</body>
+        <body className={inter.className}>
+          <div className="">
+            <Navbar />
+            <div className="no-scrollbar ">
+
+              {children}
+            </div>
+          </div>
+
+        </body>
 
       </ProviderProvider>
 

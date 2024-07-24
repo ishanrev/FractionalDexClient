@@ -38,6 +38,10 @@ function NFTSummary({
 
   }
 
+  useEffect(()=>{
+    loadShares()
+  },[provider])
+
   useEffect(() => {
     loadShares()
   }, [])

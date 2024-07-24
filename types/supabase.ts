@@ -17,6 +17,7 @@ export type Database = {
           dex_address: string | null
           fractional_owners: string[] | null
           id: number
+          liquidity_providers: string[] | null
           metadata: Metadata | null
           nft_address: string | null
           owner: string | null
@@ -30,6 +31,7 @@ export type Database = {
           dex_address?: string | null
           fractional_owners?: string[] | null
           id?: number
+          liquidity_providers?: string[] | null
           metadata?: Metadata | null
           nft_address?: string | null
           owner?: string | null
@@ -43,6 +45,7 @@ export type Database = {
           dex_address?: string | null
           fractional_owners?: string[] | null
           id?: number
+          liquidity_providers?: string[] | null
           metadata?: Metadata | null
           nft_address?: string | null
           owner?: string | null

@@ -37,6 +37,9 @@ export default function NFTProfile() {
 
 	const handleNativeChange = async (newValue: string) => {
 		if (emptyValue(newValue)) return
+		if(!provider){
+			throw("no provider available")
+		}
 		let signer = await provider?.getSigner() as JsonRpcSigner
 		const ethReturn = await getTokensForMain(signer, nft?.dex_address ?? "", newValue)
 		setEthValue(ethReturn)
@@ -44,6 +47,9 @@ export default function NFTProfile() {
 	}
 	const handleEthChange = async (newValue: string) => {
 		if (emptyValue(newValue)) return
+		if(!provider){
+			throw("no provider available")
+		}
 
 
 		let signer = await provider?.getSigner() as JsonRpcSigner
@@ -143,16 +149,16 @@ export default function NFTProfile() {
 				<div className="h-full bg-back border-t border-gray-300 gap-6 flex justify-between  col-span-3 row-span-1   bg">
 					<div className="flex flex-col py-4 gap-4 w-2/5">
 
-						<div className="bg-[#f9f9f9] p-4 rounded-lg ">
+						<div className="bg-[#f9f9f9] p-4 flex justify-between gap-4 rounded-lg ">
 							<input
 								type="number"
 								placeholder="0.0"
 								value={tokenValue}
 								onChange={onTokenChange}
 
-								className="bg-transparent w-full text-text"
+								className="bg-transparent w-4/5 text-text"
 							/>
-
+							<span className="text-text"> {nft?.token_symbol && nft.token_symbol}</span>
 						</div>
 						<div className=" flex justify-center items-center">{nft?.token_symbol &&
 							<span className="text-text text-sm">
@@ -160,7 +166,7 @@ export default function NFTProfile() {
 								{nft?.token_symbol && (type === "native" ? nft?.token_symbol + ' -> ' + 'ETH' : 'ETH' + ' -> ' + nft?.token_symbol)}
 
 							</span>}</div>
-						<div className="bg-[#f9f9f9] p-4 rounded-lg ">
+						<div className="bg-[#f9f9f9] p-4 flex justify-between gap-4 rounded-lg ">
 							<input
 								type="number"
 
@@ -168,8 +174,9 @@ export default function NFTProfile() {
 								value={ethValue}
 								onChange={onEthChange}
 
-								className="bg-transparent w-full text-text"
+								className="bg-transparent w-4/5 text-text"
 							/>
+							<span className="text-text"> ETH </span>
 
 						</div>
 
@@ -192,28 +199,50 @@ export default function NFTProfile() {
 							</div> */}
 						</div>
 					</div>
-					<div className="flex flex-col py-4 gap-4 h-3/5 w-2/5 ">
+					<div className="flex w-1/2">
+						<div className="flex flex-col py-4 gap-4 h-3/5 w-1/2 ">
 
-						<div className="px-4 sm:px-0">
-							<h3 className="text-base font-semibold leading-7 text-gray-500">List of Owners</h3>
-							<p className="mt-1 max-w-2xl text-sm leading-6 text-gray-900">NFT details and information.</p>
+							<div className="px-4 sm:px-0">
+								<h3 className="text-base font-semibold leading-7 text-gray-500">List of Owners</h3>
+								<p className="mt-1 max-w-2xl text-sm leading-6 text-gray-900">NFT details and information.</p>
+							</div>
+							<div className="overflow-y-scroll no-scrollbar">
+								{nft?.fractional_owners && nft.fractional_owners.map((owner, index) => {
+									return (
+										<div key={index}>
+											<span className="p-1">
+												<Copy text={owner} length={8} />
+											</span>
+
+										</div>
+									)
+								})}
+							</div>
+
+
 						</div>
-						<div className="overflow-y-scroll">
-							{nft?.fractional_owners && nft.fractional_owners.map((owner, index) => {
-								return (
-									<div key={index}>
-										<span className="p-1">
-											<Copy text={owner} length={8} />
-										</span>
+						<div className="flex flex-col py-4 gap-4 h-3/5 w-1/2 ">
 
-									</div>
-								)
-							})}
+							<div className="px-4 sm:px-0">
+								<h3 className="text-base font-semibold leading-7 text-gray-500">Liquidity Providers</h3>
+								<p className="mt-1 max-w-2xl text-sm leading-6 text-gray-900">NFT details and information.</p>
+							</div>
+							<div className="overflow-y-scroll no-scrollbar">
+								{nft?.liquidity_providers && nft.liquidity_providers.map((owner, index) => {
+									return (
+										<div key={index}>
+											<span className="p-1">
+												<Copy text={owner} length={8} />
+											</span>
+
+										</div>
+									)
+								})}
+							</div>
+
 						</div>
-
-
-
 					</div>
+
 				</div>
 
 			</div>

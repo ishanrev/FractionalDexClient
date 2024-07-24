@@ -27,3 +27,24 @@ export async function getNft(nftAddress:string, tokenId:string):Promise<Database
     }
     return data[0] 
 }
+
+export async function getExploreNFTs({nftAddress, tokenId}:{nftAddress?:string, tokenId?:string}):Promise<Database['public']['Tables']['nfts']['Row'][]>{
+    let match = {
+        nft_address: nftAddress, token_id:tokenId
+    }
+    if(match.nft_address=== undefined){
+        delete match['nft_address']
+    }
+    if(match.token_id=== undefined){
+        delete match['token_id']
+    }
+    const { data, error } = await supabase
+    .from('nfts')
+    .select('*')
+    .match(match)
+    console.log(data)
+    if(error && !data){
+        throw(error)
+    }
+    return data || []
+}

@@ -1,0 +1,27 @@
+
+@keyframes zoomIn {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.2);
+  }
+}
+
+@keyframes zoomOut {
+  0% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.zoom:hover {
+  animation: zoomIn 0.5s forwards;
+}
+
+.zoom:not(:hover){
+  animation: zoomOut 0.5s forwards;
+
+}

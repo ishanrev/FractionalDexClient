@@ -5,10 +5,12 @@ import AssetToken from "./../../abi/AssetToken.json"
 import NFTDex from "./../../abi/NFTDex.json"
 import { JsonRpcSigner } from "ethers";
 import { ContractTransactionResponse } from "ethers";
+import { BrowserProvider } from "ethers";
+import { Dispatch, SetStateAction } from "react";
 
 export async function getTokenBalance(signer:Signer, accountAddress:string, tokenAddress:string) : Promise<{tokens:number, ownership:number}>{
 	try{
-
+		console.log(signer, accountAddress, tokenAddress)
 	const tokenContract:Contract = new ethers.Contract(tokenAddress, AssetToken.abi, signer)
 	
 	const balance = await tokenContract.balanceOf(accountAddress);
@@ -88,4 +90,37 @@ export async function swapMainForTokens(signer:Signer, dexAddress:string, ethAmo
 		throw(error)
 	}
 
+}
+
+export const connectToWalet = async (
+	window:any,
+	setProvider: Dispatch<SetStateAction<ethers.BrowserProvider | null>> |null,
+  setIsConnected: Dispatch<SetStateAction<boolean>> |null,
+	setAccount: Dispatch<SetStateAction<string>>,
+	onConnect?: (...args:any)=>{}
+	 ) => {
+	try {
+		if (window.ethereum) {
+			const providerTemp: BrowserProvider = new BrowserProvider(window.ethereum)
+			await providerTemp.send("eth_requestAccounts", [])
+			const signer: Signer = await providerTemp.getSigner()
+			const address = await signer.getAddress()
+			console.log("MetaMask connected", address)
+			console.log(providerTemp)
+			
+			console.log("going to setProvider")
+			setProvider && setProvider(providerTemp)
+			
+			setIsConnected && setIsConnected(true)
+			setAccount(address)
+			onConnect && onConnect()
+
+		} else {
+			alert("No ethereum in the wallet")
+			throw ("No ethereum in the wallet")
+		}
+
+	} catch (connectError) {
+		console.log(connectError)
+	}
 }

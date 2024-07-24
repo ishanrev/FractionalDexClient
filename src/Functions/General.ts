@@ -10,7 +10,7 @@ export function emptyValue(value:string):boolean{
 
 export function truncateAddress(baseAddress:string, stopLength:number):string{
     if (typeof baseAddress !== 'string' || baseAddress.length < 10) {
-      throw new Error('Invalid address format');
+      throw new Error('Invalid address format ' + baseAddress);
     }
   
     // Extract the first 4 characters and the last 4 characters

@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "./styles/zoom.css";
 
 :root {
   --foreground-rgb: 0, 0, 0;
@@ -59,3 +60,4 @@ input:focus {
 *::-webkit-scrollbar {
   width: 8px;
 }
+

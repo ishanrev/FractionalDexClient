@@ -4,10 +4,12 @@ import React from 'react'
 
 function Copy({
   text,
-  length = 4
+  length = 4,
+  icon = true
 }: {
   text: string
   length?:number
+  icon?:boolean
 }
 ) {
   function copyToClipboard() {
@@ -15,9 +17,9 @@ function Copy({
   }
   return (
     <span className='flex gap-2 hover:opacity-30 cursor-pointer '>
-      <span onClick={copyToClipboard} className='text'>{truncateAddress(text, length)}</span>
+      <span onClick={copyToClipboard} className='text'>{text && truncateAddress(text, length)}</span>
 
-      <span className='pt-1'><DocumentDuplicateIcon className='w-4 h-4' /></span>
+      {icon &&<span className='pt-1'><DocumentDuplicateIcon className='w-4 h-4' /></span>}
 
     </span>
   )

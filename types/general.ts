@@ -12,3 +12,11 @@ export interface Transaction{
   success: boolean,
   error?:string
 }
+
+export interface ExploreCard{
+  name: string,
+  description: string,
+  image: string,
+  imageAlt: string,
+  href: string,
+}

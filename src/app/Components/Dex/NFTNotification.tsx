@@ -26,7 +26,7 @@ function NFTNotification({
   nft: Database['public']['Tables']['nfts']['Row'],
 
 }) {
-  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [isOpen, setIsOpen] = useState<boolean>(true)
   function open() {
     setIsOpen(true)
   }
