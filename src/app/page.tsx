@@ -138,7 +138,24 @@ export default function Home() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-300 gap-4">
+              <tbody className=" gap-4">
+                {myShares && myShares.map((share, index) => (
+                  <tr key={index} className="mt-4">
+                    <td>
+                      {share.image && share.image !== "" && <Image src={toIPFS(share.image)} width={80} height={80} className="  rounded-md whitespace-nowrap my-2  text-sm text-gray-500" alt="NFT Image" />}
+                    </td>
+
+                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{truncateValue(share.tokens.toString()) + ' ' + share.tokenSymbol}</td>
+                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{truncateValue(share.ownership.toString())}</td>
+                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">2</td>
+                    <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                      <Link href={`/${share.nftCollectionAddress}/${share.tokenId}`}
+                        className=" p-4 py-2 text-gray-500 hover:text-button-secondary rounded-lg bg-gray-200">
+                        Visit<span className="sr-only"></span>
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
                 {myShares && myShares.map((share, index) => (
                   <tr key={index} className="mt-4">
                     <td>

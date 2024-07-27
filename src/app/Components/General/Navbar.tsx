@@ -94,12 +94,12 @@ export default function Navbar() {
             {/* Profile dropdown */}
             <Menu as="div" className="relative ml-3">
               <div>
-                <MenuButton onClick={handleClick} className="relative opacity-100 active:shadow-gray-500 hover:opacity-75 flex rounded-lg bg-gray-200 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 ">
+                <MenuButton onClick={handleClick} className="relative opacity-100 text-gray-500 active:shadow-gray-500 hover:opacity-75 flex rounded-lg bg-gray-200 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 ">
                   <span className="absolute -inset-1.5" />
                   {isConnected ? <Copy text={account} length={8} icon={false} /> : "Connect"}
                 </MenuButton>
               </div>
-              <MenuItems
+              {/* <MenuItems
                 transition
                 className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
               >
@@ -118,13 +118,13 @@ export default function Navbar() {
                     Sign out
                   </a>
                 </MenuItem>
-              </MenuItems>
+              </MenuItems> */}
             </Menu>
           </div>
         </div>
       </div>
 
-      <DisclosurePanel className="sm:hidden">
+      {/* <DisclosurePanel className="sm:hidden">
         <div className="space-y-1 px-2 pb-3 pt-2">
           {navigation.map((item) => (
             <DisclosureButton
@@ -141,7 +141,7 @@ export default function Navbar() {
             </DisclosureButton>
           ))}
         </div>
-      </DisclosurePanel>
+      </DisclosurePanel> */}
     </Disclosure>
   )
 }

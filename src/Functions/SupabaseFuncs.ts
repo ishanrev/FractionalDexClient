@@ -1,3 +1,4 @@
+import { NewFraction } from './../../types/newFraction';
 import { Database } from "../../types/supabase";
 import { SupabaseClient, createClient } from '@supabase/supabase-js'
 
@@ -10,7 +11,7 @@ export async function getListOfNfts(userAddress:string):Promise<Database['public
         .select('*')
         .contains('fractional_owners', [userAddress])
         console.log(data)
-        if(error && !data){
+        if(error || !data){
             throw(error)
         }
         return data || []
@@ -22,7 +23,7 @@ export async function getNft(nftAddress:string, tokenId:string):Promise<Database
     .select('*')
     .match({nft_address: nftAddress, token_id:tokenId})
     console.log(data)
-    if(error && !data){
+    if(error || !data){
         throw(error)
     }
     return data[0] 
@@ -43,8 +44,22 @@ export async function getExploreNFTs({nftAddress, tokenId}:{nftAddress?:string, 
     .select('*')
     .match(match)
     console.log(data)
-    if(error && !data){
+    if(error || !data){
         throw(error)
     }
     return data || []
+}
+
+export async function addNFTRow(nft:any):Promise<boolean>{
+    const { data, error } = await supabase
+    .from('nfts')
+    .insert([
+        nft
+    ])
+    console.log(data)
+    if(error || !data){
+        console.log(error)
+        throw(error)
+    }
+    return true
 }

@@ -1,3 +1,6 @@
+import { UploadStages } from "../../types/newFraction";
+const  STAGES = ["loadNFT" , "basicValues" , "createDex" , "createSupabase" , "approvals" , "lock" , "liquidity"]
+ 
 export function toIPFS(baseURL:string){
   let ipfsURL = "https://ipfs.io/ipfs/"+ baseURL.substring(baseURL.indexOf("/")+2)
   return ipfsURL
@@ -33,3 +36,12 @@ export function truncateValue(value:string, sliceNum = 4):string{
   return `${start}`;
 }
 
+export function pastUploadStage(currStage:UploadStages, targetStage:UploadStages):boolean{
+
+  return STAGES.indexOf(currStage) > STAGES.indexOf(targetStage)
+}
+
+export function nextStage(currStage:UploadStages): UploadStages{
+  //@ts-ignore
+  return STAGES[STAGES.indexOf(currStage)+1]
+}

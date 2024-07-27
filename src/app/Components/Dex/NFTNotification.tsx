@@ -1,5 +1,5 @@
 'use client'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
 import { Button, Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 
 import { NFTInfo, NFTShare, Transaction } from '../../../../types/general'
@@ -15,6 +15,7 @@ function NFTNotification({
   ethValue,
   type,
   swapping,
+  setSwapping,
   transaction,
   nft
 }: {
@@ -22,6 +23,7 @@ function NFTNotification({
   ethValue: string,
   type: "native" | "eth",
   swapping: boolean,
+  setSwapping: Dispatch<SetStateAction<boolean>>,
   transaction: Transaction,
   nft: Database['public']['Tables']['nfts']['Row'],
 
@@ -32,6 +34,7 @@ function NFTNotification({
   }
 
   function close() {
+    setSwapping(false)
     setIsOpen(false)
   }
 
@@ -56,11 +59,19 @@ function NFTNotification({
             className="w-full max-w-md rounded-xl bg-white/50 p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
           >
             <DialogTitle as="h3" className="text-base/7 font-medium text-gray-900">
-              {transaction.success ? "Transaction successful": "Transaction Failed"}
+              {transaction.success ? "Transaction successful" : "Transaction Failed"}
             </DialogTitle>
             <p className="mt-2 text-sm/6 text-gray-600">
-              The transaction was successful. { '\n' + 
-              type==="native"?`${tokenValue} ${nft.token_symbol} was successfully swapped for ${ethValue} ETH`:`${ethValue} ETH was successfully swapped for ${tokenValue} ${nft.token_symbol} `}
+              {transaction.success ?
+                <>The transaction was successful. {'\n' +
+                  type === "native" ? `${tokenValue} ${nft.token_symbol} was successfully swapped for ${ethValue} ETH` : `${ethValue} ETH was successfully swapped for ${tokenValue} ${nft.token_symbol} `}
+
+                </>
+                :
+                <>
+                  The transaction failed because the transaction was {transaction.error}
+                </>
+              }
             </p>
             <div className="mt-4">
               <Button

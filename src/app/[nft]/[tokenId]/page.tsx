@@ -118,11 +118,11 @@ export default function NFTProfile() {
 			} else {
 				throw ("provider missing or nft information missing")
 			}
-		} catch (swapError) {
-			console.log(swapError)
+		} catch (swapError :any) {
+			console.log(typeof(swapError))
 			setTransaction({
 				success: false,
-				error: swapError as string
+				error: ""
 			})
 		}
 	}
@@ -130,7 +130,7 @@ export default function NFTProfile() {
 	return (
 		<main className="flex bg-white min-h-screen flex-col items-center justify-between p-20 px-16 xl:px-48">
 
-			{nft && <NFTNotification swapping={swapping} tokenValue={tokenValue} ethValue={ethValue} type={type} transaction={transaction} nft={nft} />}
+			{nft && <NFTNotification setSwapping={setSwapping} swapping={swapping} tokenValue={tokenValue} ethValue={ethValue} type={type} transaction={transaction} nft={nft} />}
 			<div className="mt-8 grid   gap-8 w-full h-[80vh] 2xl:max-w-[70%]">
 				<div className="  flex flex-col justify-start items-center  w-full  rounded-lg">
 
