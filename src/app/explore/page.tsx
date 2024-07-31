@@ -58,7 +58,7 @@ function Explore() {
   }, [])
 
   return (
-    <div className="bg-white h-[100vh]">
+    <div className="bg-white ">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl py-16 sm:py-24 lg:max-w-none lg:py-32">
           <div className="flex justify-between items-center">
@@ -75,7 +75,7 @@ function Explore() {
             </div>
           </div>
 
-          <div className="mt-6 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-2 lg:space-y-0">
+          <div className="mt-6 gap-y-8 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-2 lg:space-y-0">
             {nftCards.map((card: ExploreCard, index: number) => (
               <div key={index} className=" relative overflow-hidden border w-[22rem] h-[26rem] z-2  rounded-xl">
                 <Link href={card.href}>

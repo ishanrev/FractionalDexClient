@@ -14,6 +14,7 @@ import { Metadata } from "../../types/metadata";
 import axios from "axios";
 import { toIPFS } from "./General";
 import { ContractFactory } from "ethers";
+import { NewFraction } from "../../types/newFraction";
 
 export const PLATFORM_ADDRESS = "0x9f889ee78F0B1E86d52Bb24367D889a0296Fa2dD"
 export const MAX_TRANSFER_TOKENS = "10000"
@@ -178,12 +179,12 @@ export const deployDex = async (signer:Signer |null, tokenName:string, tokenSymb
 }
 
 
-export async function approveTransferOfNFT(signer:Signer, nftAddress:string, tokenId:string) : Promise<boolean>{
+export async function approveTransferOfNFT(signer:Signer, dexAddress:string,nftAddress:string, tokenId:string) : Promise<boolean>{
 	try{
 		const account = await signer.getAddress()
 		const nftContract:Contract = new ethers.Contract(nftAddress, ERC721ABI, signer)
 		
-		const approveResponse:ContractTransactionResponse = await nftContract.approve(account, tokenId)
+		const approveResponse:ContractTransactionResponse = await nftContract.approve(dexAddress, tokenId)
 		const receipt = await approveResponse.wait()
 		
 		return true
@@ -193,12 +194,13 @@ export async function approveTransferOfNFT(signer:Signer, nftAddress:string, tok
 	}
 
 }
-export async function approveTransferOfAssetToken(signer:Signer, tokenAddress:string) : Promise<boolean>{
+export async function approveTransferOfAssetToken(signer:Signer, dexAddress:string, tokenAddress:string) : Promise<boolean>{
 	try{
+		console.log(signer, dexAddress, tokenAddress)
 		const account = await signer.getAddress()
 		const nftContract:Contract = new ethers.Contract(tokenAddress, AssetToken.abi, signer)
 		const maxTokensInWei = ethers.parseUnits(MAX_TRANSFER_TOKENS)
-		const approveResponse:ContractTransactionResponse = await nftContract.approve(account,maxTokensInWei )
+		const approveResponse:ContractTransactionResponse = await nftContract.approve(dexAddress,maxTokensInWei )
 		const receipt = await approveResponse.wait()
 		
 		return true
@@ -207,4 +209,36 @@ export async function approveTransferOfAssetToken(signer:Signer, tokenAddress:st
 		return false
 	}
 
+}
+export async function lockNFT(signer: JsonRpcSigner, config:NewFraction): Promise<boolean>{
+	try{
+		const account = await signer.getAddress()
+		const dexContract:Contract = new ethers.Contract(config.dexAddress!, NFTDex.abi, signer)
+		const numTokensInWei = ethers.parseUnits(config.numFractionalTokens!)
+		const lockedResponse:ContractTransactionResponse = await dexContract.uploadNFT(config.valuation,numTokensInWei,config.nftAddress, config.tokenId  )
+		const receipt = await lockedResponse.wait()
+		
+		return true
+	}catch(error){
+		console.log(error)
+		return false
+	}
+}
+export async function addLiquidity(signer: JsonRpcSigner, config:NewFraction): Promise<boolean>{
+	try{
+		const account = await signer.getAddress()
+		const dexContract:Contract = new ethers.Contract(config.dexAddress!, NFTDex.abi, signer)
+		const numTokensInWei = ethers.parseUnits(config.numFractionalTokens!)
+		const transactionMetadata = {
+			value: ethers.parseUnits(config.initialLiquidityValue!)
+		}
+		const initialLiquidityTokensInWei = ethers.parseUnits(config.initialLiquidityTokens!)
+		const lockedResponse:ContractTransactionResponse = await dexContract.addLiquidity(initialLiquidityTokensInWei,transactionMetadata  )
+		const receipt = await lockedResponse.wait()
+		
+		return true
+	}catch(error){
+		console.log(error)
+		return false
+	}
 }

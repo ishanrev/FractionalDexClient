@@ -69,18 +69,21 @@ export default function Home() {
       let temp = []
 
       for (let nft of nfts) {
-
-        const { tokens, ownership } = await getTokenBalance(signer, await signer.getAddress() ?? "", nft.token_address ?? "")
-        console.log(tokens)
-        temp.push({
-          image: nft.metadata?.image ?? "",
-          tokens,
-          ownership,
-          liquidityValue: 10,
-          tokenSymbol: nft.token_symbol ?? "",
-          nftCollectionAddress: nft.nft_address ?? "",
-          tokenId: nft.token_id ?? 0
-        })
+        try {
+          const { tokens, ownership } = await getTokenBalance(signer, await signer.getAddress() ?? "", nft.token_address ?? "")
+          console.log(tokens)
+          temp.push({
+            image: nft.metadata?.image ?? "",
+            tokens,
+            ownership,
+            liquidityValue: 10,
+            tokenSymbol: nft.token_symbol ?? "",
+            nftCollectionAddress: nft.nft_address ?? "",
+            tokenId: nft.token_id ?? 0
+          })
+        } catch (tokenError) {
+          console.log("error at " + nft.id)
+        } 
       }
       console.log(temp)
       setMyShares(temp)
@@ -156,23 +159,7 @@ export default function Home() {
                     </td>
                   </tr>
                 ))}
-                {myShares && myShares.map((share, index) => (
-                  <tr key={index} className="mt-4">
-                    <td>
-                      {share.image && share.image !== "" && <Image src={toIPFS(share.image)} width={80} height={80} className="  rounded-md whitespace-nowrap my-2  text-sm text-gray-500" alt="NFT Image" />}
-                    </td>
-
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{truncateValue(share.tokens.toString()) + ' ' + share.tokenSymbol}</td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{truncateValue(share.ownership.toString())}</td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">2</td>
-                    <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                      <Link href={`/${share.nftCollectionAddress}/${share.tokenId}`}
-                        className=" p-4 py-2 text-gray-500 hover:text-button-secondary rounded-lg bg-gray-200">
-                        Visit<span className="sr-only"></span>
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
+            
               </tbody>
             </table>
           </div>

@@ -51,15 +51,28 @@ export async function getExploreNFTs({nftAddress, tokenId}:{nftAddress?:string, 
 }
 
 export async function addNFTRow(nft:any):Promise<boolean>{
-    const { data, error } = await supabase
-    .from('nfts')
-    .insert([
-        nft
-    ])
-    console.log(data)
-    if(error || !data){
-        console.log(error)
-        throw(error)
+    try {
+        const { data, error } = await supabase
+            .from('nfts')
+            .insert([nft])
+            .select("*");
+
+        console.log('Data:', data);
+        console.log('Error:', error);
+
+        if (error) {
+            console.error('Error inserting data:', error);
+            throw error;
+        }
+
+        if (!data) {
+            console.error('No data returned after insertion');
+            return false;
+        }
+
+        return true;
+    } catch (err) {
+        console.error('Unexpected error:', err);
+        throw err;
     }
-    return true
 }

@@ -14,7 +14,9 @@ export type NewFraction = {
   fractionalOwners?:string[],
   tokenAddress?:string,
   liquidityProviders?:string[],
-  owner?:string
+  owner?:string,
+  initialLiquidityTokens?:string,
+  initialLiquidityValue?:string
 }
 
 export function newFractionToSupabase(nft:NewFraction): any{
