@@ -6,13 +6,8 @@ import { useContext, useEffect, useState } from 'react'
 import { ProviderContext } from '@/Functions/Contexts'
 import { connectToWalet } from '@/Functions/BlockchainFunctions'
 import Link from 'next/link'
+import { useParams, usePathname } from 'next/navigation'
 
-const navigation = [
-  { name: 'Dashboard', href: '#', current: true },
-  { name: 'Team', href: '#', current: false },
-  { name: 'Projects', href: '#', current: false },
-  { name: 'Calendar', href: '#', current: false },
-]
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
@@ -22,6 +17,14 @@ export default function Navbar() {
 
   const { isConnected, provider, setProvider, setIsConnected } = useContext(ProviderContext)
   const [account, setAccount] = useState<string>("")
+  const [navigation, setNavigation] = useState([
+    { name: 'Home', href: '/', current: false },
+    { name: 'Explore', href: '/explore', current: false },
+    { name: 'Create', href: '/add', current: false },
+  ])
+
+
+  const pathName = usePathname()
   const loadAccount = async () => {
     let tempSigner = await provider?.getSigner();
     const tempAccount = await tempSigner?.getAddress()
@@ -30,17 +33,39 @@ export default function Navbar() {
       setAccount(tempAccount)
     }
   }
+  const setCurrentNavbarOption = () => {
+    let tempNav = navigation;
+    for (let x = 0;x<tempNav.length;x++) {
+      console.log(pathName, tempNav[x].href)
+      if (pathName === tempNav[x].href) {
+        tempNav[x].current = true;
+      } else {
+        tempNav[x].current = false;
+      }
+    }
+    setNavigation(tempNav)
+
+  }
   const handleClick = async () => {
     if (isConnected === false) {
       connectToWalet(window, setProvider, setIsConnected, setAccount)
     }
   }
+
+
   useEffect(() => {
     loadAccount()
   }, [isConnected])
 
+  useEffect(()=>{
+    console.log("changed")
+    setCurrentNavbarOption()
+  },[pathName])
+
   useEffect(() => {
     loadAccount()
+    setCurrentNavbarOption()
+
   }, [])
   return (
     <Disclosure as="nav" className="bg-white">
@@ -56,7 +81,7 @@ export default function Navbar() {
             </DisclosureButton>
           </div>
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-            <Link href = "/" className="flex flex-shrink-0 items-center">
+            <Link href="/" className="flex flex-shrink-0 items-center">
               <img
                 alt="Your Company"
                 src="https://tailwindui.com/img/logos/mark.svg?color=cyan&shade=700"
@@ -66,7 +91,7 @@ export default function Navbar() {
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
                 {navigation.map((item) => (
-                  <a
+                  <Link
                     key={item.name}
                     href={item.href}
                     aria-current={item.current ? 'page' : undefined}
@@ -76,7 +101,7 @@ export default function Navbar() {
                     )}
                   >
                     {item.name}
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -122,6 +147,9 @@ export default function Navbar() {
             </Menu>
           </div>
         </div>
+        {!account && <div className='flex justify-center w-full text-xs text-red-500 bg-white py-1 rounded-md'>
+            Your wallet isnt connected, this could prevent  in-app features
+        </div>}
       </div>
 
       {/* <DisclosurePanel className="sm:hidden">

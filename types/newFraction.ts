@@ -1,6 +1,6 @@
 import { Database } from "./supabase"
 
-export type UploadStages = "loadNFT" | "basicValues" | "createDex" | "createSupabase" | "approvals" | "lock" | "liquidity"
+export type UploadStages = "loadNFT" | "basicValues" | "createDex" | "createSupabase" | "approvalNFT"| "approvalToken" | "lock" | "liquidity" | "Done"
 
 export type NewFraction = {
   nftAddress?:string,

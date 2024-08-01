@@ -10,7 +10,6 @@ export async function getListOfNfts(userAddress:string):Promise<Database['public
         .from('nfts')
         .select('*')
         .contains('fractional_owners', [userAddress])
-        console.log(data)
         if(error || !data){
             throw(error)
         }
@@ -22,7 +21,6 @@ export async function getNft(nftAddress:string, tokenId:string):Promise<Database
     .from('nfts')
     .select('*')
     .match({nft_address: nftAddress, token_id:tokenId})
-    console.log(data)
     if(error || !data){
         throw(error)
     }
@@ -43,7 +41,6 @@ export async function getExploreNFTs({nftAddress, tokenId}:{nftAddress?:string, 
     .from('nfts')
     .select('*')
     .match(match)
-    console.log(data)
     if(error || !data){
         throw(error)
     }
@@ -57,8 +54,7 @@ export async function addNFTRow(nft:any):Promise<boolean>{
             .insert([nft])
             .select("*");
 
-        console.log('Data:', data);
-        console.log('Error:', error);
+       
 
         if (error) {
             console.error('Error inserting data:', error);

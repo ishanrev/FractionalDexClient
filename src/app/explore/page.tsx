@@ -20,7 +20,6 @@ function Explore() {
       //   throw ("no signer avaailable")
       // }
       const nfts = await getExploreNFTs(search)
-      console.log(nfts)
       let temp: ExploreCard[] = []
 
       for (let nft of nfts) {
@@ -33,7 +32,6 @@ function Explore() {
         })
       }
 
-      console.log(temp)
       setNftCards(temp)
 
     } catch (loadError) {
@@ -45,7 +43,6 @@ function Explore() {
 
 
   useEffect(() => {
-    console.log(search)
     if (search.nftAddress !== "") {
       if (parseInt(search.tokenId) <= 0 || search.tokenId === "") {
         setSearch({ ...search, tokenId: undefined })

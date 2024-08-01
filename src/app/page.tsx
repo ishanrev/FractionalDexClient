@@ -36,14 +36,12 @@ export default function Home() {
 
   useEffect(() => {
     if (isConnected) {
-      console.log(provider)
       loadShares()
     }
 
   }, [isConnected])
 
   useEffect(() => {
-    console.log()
     if (window.ethereum) {
       window.ethereum.on("accountsChanged", handleAccountsChanged)
     }
@@ -65,13 +63,11 @@ export default function Home() {
         throw ("no signer avaailable")
       }
       const nfts = await getListOfNfts(await signer.getAddress())
-      console.log(nfts)
       let temp = []
 
       for (let nft of nfts) {
         try {
           const { tokens, ownership } = await getTokenBalance(signer, await signer.getAddress() ?? "", nft.token_address ?? "")
-          console.log(tokens)
           temp.push({
             image: nft.metadata?.image ?? "",
             tokens,
@@ -85,7 +81,6 @@ export default function Home() {
           console.log("error at " + nft.id)
         } 
       }
-      console.log(temp)
       setMyShares(temp)
 
     } catch (loadError) {
@@ -96,13 +91,11 @@ export default function Home() {
 
   const handleAccountsChanged = (accounts: any) => {
     if (accounts.length > 0 && account !== accounts[0]) {
-      console.log("atleast triggering the event")
       setAccount(accounts[0])
 
       loadShares()
 
     } else {
-      console.log("no account found")
       setIsConnected && setIsConnected(false)
       setAccount("")
     }

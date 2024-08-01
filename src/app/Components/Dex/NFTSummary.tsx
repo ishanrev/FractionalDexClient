@@ -10,10 +10,12 @@ import { truncateValue } from '@/Functions/General'
 
 function NFTSummary({
   nft,
-  swapping
+  swapping,
+  onlyDisplay = false
 }: {
   nft: Database['public']['Tables']['nfts']['Row'],
-  swapping: boolean
+  swapping?: boolean,
+  onlyDisplay?:boolean
 }) {
   const [share, setShare] = useState<NFTShare>({ tokens: null, ownership: null })
   const { provider } = useContext(ProviderContext)
@@ -47,7 +49,7 @@ function NFTSummary({
   }, [])
 
   useEffect(() => {
-    if (swapping === false) {
+    if (swapping === false && !onlyDisplay) {
 
       loadShares()
     }
@@ -74,22 +76,29 @@ function NFTSummary({
                 {nft.token_id && nft.token_id}
               </dd>
             </div>
+           
+            <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+              <dt className="text-sm font-medium leading-6 text-gray-500">Trade Token</dt>
+              <dd className="mt-1 text-sm leading-6 text-gray-900 sm:col-span-2 sm:mt-0">{nft.token_symbol && nft.token_symbol}</dd>
+            </div>
+            <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+              <dt className="text-sm font-medium leading-6 text-gray-500">Token address</dt>
+              <dd className="mt-1 text-sm leading-6 text-gray-790009000 sm:col-span-2 sm:mt-0">
+                {nft.token_address && <Copy text={nft.token_address} />}
+              </dd>
+            </div>
             <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
               <dt className="text-sm font-medium leading-6 text-gray-500">Creator address</dt>
               <dd className="mt-1 text-sm leading-6 text-gray-790009000 sm:col-span-2 sm:mt-0">
                 {nft.owner && <Copy text={nft.owner} />}
               </dd>
             </div>
-            <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt className="text-sm font-medium leading-6 text-gray-500">Trade Token</dt>
-              <dd className="mt-1 text-sm leading-6 text-gray-900 sm:col-span-2 sm:mt-0">{nft.token_symbol && nft.token_symbol}</dd>
-            </div>
 
 
           </dl>
         </div>
       </div>
-      <div className='rounded-lg bg-[#f9f9f9] p-4 w-full h-full'>
+      {!onlyDisplay && <div className='rounded-lg bg-[#f9f9f9] p-4 w-full h-full'>
         <h3 className="text-base font-semibold mb-3 leading-7 text-gray-500">Your Balance / Fractional Share</h3>
         <div className='flex gap-24 justify-start'>
           <span className='text-huge text-button-secondary'>
@@ -100,7 +109,7 @@ function NFTSummary({
 
           </span>
         </div>
-      </div>
+      </div>}
     </div>
   )
 }

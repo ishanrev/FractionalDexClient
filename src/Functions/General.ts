@@ -1,5 +1,5 @@
 import { UploadStages } from "../../types/newFraction";
-export const  STAGES = ["loadNFT" , "basicValues" , "createDex" , "createSupabase" , "approvals" , "lock" , "liquidity"]
+export const  STAGES = ["loadNFT" , "basicValues" , "createDex" , "createSupabase" , "approvalNFT", "approvalToken" , "lock" , "liquidity", "Done"]
  
 export function toIPFS(baseURL:string){
   let ipfsURL = "https://ipfs.io/ipfs/"+ baseURL.substring(baseURL.indexOf("/")+2)
@@ -47,5 +47,5 @@ export function nextStage(currStage:UploadStages): UploadStages{
 }
 
 export function calculateProgress(currStage:UploadStages){
-  return STAGES.indexOf(currStage)*100/STAGES.length
+  return (STAGES.indexOf(currStage)+1)*100/STAGES.length
 }

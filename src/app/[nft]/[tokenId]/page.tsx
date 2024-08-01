@@ -17,6 +17,10 @@ import { ProviderContext } from "@/Functions/Contexts";
 import NFTSummary from "@/app/Components/Dex/NFTSummary";
 import Copy from "@/app/Components/General/Copy";
 import NFTNotification from "@/app/Components/Dex/NFTNotification";
+import { useRouter } from "next/navigation";
+import ReactLoading from 'react-loading';
+import Loading from "@/app/Components/General/Loading";
+
 declare var window: any
 
 
@@ -30,6 +34,7 @@ export default function NFTProfile() {
 	const { debounce } = useDebounce()
 	const { provider } = useContext(ProviderContext)
 	const [swapping, setSwapping] = useState<boolean>(false)
+	const router = useRouter()
 	const [transaction, setTransaction] = useState<Transaction>({
 		success: false,
 
@@ -37,8 +42,8 @@ export default function NFTProfile() {
 
 	const handleNativeChange = async (newValue: string) => {
 		if (emptyValue(newValue)) return
-		if(!provider){
-			throw("no provider available")
+		if (!provider) {
+			throw ("no provider available")
 		}
 		let signer = await provider?.getSigner() as JsonRpcSigner
 		const ethReturn = await getTokensForMain(signer, nft?.dex_address ?? "", newValue)
@@ -47,8 +52,8 @@ export default function NFTProfile() {
 	}
 	const handleEthChange = async (newValue: string) => {
 		if (emptyValue(newValue)) return
-		if(!provider){
-			throw("no provider available")
+		if (!provider) {
+			throw ("no provider available")
 		}
 
 
@@ -78,6 +83,7 @@ export default function NFTProfile() {
 			console.log(tempNFT)
 		} catch (nftError) {
 			console.log(nftError)
+			router.push("/404")
 		}
 	}
 
@@ -118,8 +124,8 @@ export default function NFTProfile() {
 			} else {
 				throw ("provider missing or nft information missing")
 			}
-		} catch (swapError :any) {
-			console.log(typeof(swapError))
+		} catch (swapError: any) {
+			console.log(typeof (swapError))
 			setTransaction({
 				success: false,
 				error: ""
@@ -131,7 +137,7 @@ export default function NFTProfile() {
 		<main className="flex bg-white min-h-screen flex-col items-center justify-between p-20 px-16 xl:px-48">
 
 			{nft && <NFTNotification setSwapping={setSwapping} swapping={swapping} tokenValue={tokenValue} ethValue={ethValue} type={type} transaction={transaction} nft={nft} />}
-			<div className="mt-8 grid   gap-8 w-full h-[80vh] 2xl:max-w-[70%]">
+			{nft && <div className="mt-8 grid   gap-8 w-full h-[80vh] 2xl:max-w-[70%]">
 				<div className="  flex flex-col justify-start items-center  w-full  rounded-lg">
 
 					{nft?.metadata?.image && nft?.metadata?.image !== "" &&
@@ -185,7 +191,13 @@ export default function NFTProfile() {
 							<div className="flex gap-2 w-full justify-end">
 								{
 									nft?.token_symbol && <button onClick={() => { swap() }} disabled={swapping} className="rounded-lg disabled:opacity-30 text-white text-center w-full p-3 py-2 bg-button-secondary cursor-pointer">
-										Swap {nft?.token_symbol + ' / ' + 'ETH'}
+										{swapping ?
+											<>
+												{/* Loading component */}
+												<Loading />
+											</> : <>
+												{`Swap ${nft?.token_symbol + '  / ' + 'ETH'}`}
+											</>}
 									</button>
 								}
 
@@ -245,7 +257,7 @@ export default function NFTProfile() {
 
 				</div>
 
-			</div>
+			</div>}
 		</main>
 	);
 }

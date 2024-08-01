@@ -23,12 +23,17 @@ import Image from 'next/image'
 import { addNFTRow } from '@/Functions/SupabaseFuncs'
 import { useIsMount } from '@/Functions/Hooks'
 import { Line } from 'rc-progress'
+import Link from 'next/link'
+import Confetti from 'react-confetti'
+import NFTSummary from '../Dex/NFTSummary'
+
 
 export default function Info() {
   const { provider } = useContext(ProviderContext)
   const [config, setConfig] = useState<NewFraction>({})
   const [stage, setStage] = useState<UploadStages>("loadNFT")
   const isMount = useIsMount()
+
   const USER_INPUT_STAGES = ["loadNFT", "basicValues"]
 
   //Stages
@@ -85,7 +90,7 @@ export default function Info() {
     }
   }
 
-  const approvals = async () => {
+  const approvalNFT = async () => {
     let signer = await provider?.getSigner()
 
     if (!signer) return
@@ -94,6 +99,17 @@ export default function Info() {
 
     if (!nftApproved) return
 
+  
+    setStage(nextStage(stage))
+
+
+  }
+  const approvalToken = async () => {
+    let signer = await provider?.getSigner()
+
+    if (!signer) return
+
+   
     let assetTokenApproved = await approveTransferOfAssetToken(signer, config.dexAddress!, config.tokenAddress!)
 
     if (!assetTokenApproved) return
@@ -142,9 +158,12 @@ export default function Info() {
     } else if (stage === "createSupabase") {
       //Blockchain function to create dex
       await createSupabase()
-    } else if (stage === "approvals") {
+    } else if (stage === "approvalNFT") {
       //Blockchain function to create dex
-      await approvals()
+      await approvalNFT()
+    }else if (stage === "approvalToken") {
+      //Blockchain function to create dex
+      await approvalToken()
     } else if (stage === "lock") {
       //Blockchain function to create dex
       await lock()
@@ -164,7 +183,7 @@ export default function Info() {
   return (
     <>
       <div className="space-y-12">
-        <Line strokeWidth={1} strokeColor={"#008080"} percent={calculateProgress(stage)} />
+        <Line strokeWidth={0.5} strokeColor={"#008080"} percent={calculateProgress(stage)} />
 
         <div className="border-b border-gray-900/10 pb-12">
           {
@@ -346,31 +365,53 @@ export default function Info() {
                       This contract manages all the liquidity pool functions for tokenization of this particular NFT
 
                     </div>
-                  </> : stage === "approvals" ?
+                  </> : stage === "approvalNFT" ?
                     <>
                       <div className="mt-10 py-10 text-gray-700">
 
-                        Please approve the NFT to transfer and manage your NFT and its custom fractional tokens.
-                        <br />
-                        Note there will be two approvals in your connected wallet
+                        Please approve the Dex to transfer and manage your NFT and its custom fractional tokens.
+                        
                       </div>
-                    </> : stage === "lock" ?
+                    </> : stage === "approvalToken" ?
                       <>
                         <div className="mt-10 py-10 text-gray-700">
 
-                          Please approve the trasnfer of the NFT from your wallet to the DEX contract, locking the NFT.
+                          Please approve the DEX tokens to transfer and manage this NFTs custom fractional tokens.
                           <br />
-                          The NFT can be unlocked and re-trasnferred back into your account at anytime
+                          Note there will be two approvals in your connected wallet
                         </div>
-                      </> : stage === "liquidity" ?
+                      </> : stage === "lock" ?
                         <>
                           <div className="mt-10 py-10 text-gray-700">
 
-                            Please approve the initial liquidity trasnfer into the pool to successfully finalixe the creation of a DEX for this NFT
-
+                            Please approve the trasnfer of the NFT from your wallet to the DEX contract, locking the NFT.
+                            <br />
+                            The NFT can be unlocked and re-trasnferred back into your account at anytime
                           </div>
-                        </> :
-                        <></>
+                        </> : stage === "liquidity" ?
+                          <>
+                            <div className="mt-10 py-10 text-gray-700">
+
+                              Please approve the initial liquidity trasnfer into the pool to successfully finalixe the creation of a DEX for this NFT
+
+                            </div>
+                          </> : stage === "Done" ?
+                            <div className=''>
+                              <br />
+                              {config.nftAddress && <NFTSummary nft = {newFractionToSupabase(config)} onlyDisplay/>}
+                              <div className="mt-10 py-1 text-gray-700 w-full items-center flex justify-center">
+                                <Confetti numberOfPieces={100} initialVelocityY={20} opacity={0.5} width={window.innerWidth} height={window.innerHeight} />
+
+                                <div className=' flex flex-col gap-6 items-center'>
+                                  <span>You have successfully created the NFT DEX</span>
+
+                                  <Link href={"/" + config.nftAddress + "/" + config.tokenId} className=' w-1/3 cursor-pointer  rounded-lg p-2 bg-button-secondary text-center text-white hover:opacity-75' >Visit NFT</Link>
+
+                                </div>
+
+                              </div>
+                            </div> :
+                            <></>
           }
           <br />
           {USER_INPUT_STAGES.includes(stage) && <button className=' disabled:opacity-75 rounded-lg p-2 bg-button-secondary text-white hover:opacity-75' onClick={processNext}>Next</button>}
