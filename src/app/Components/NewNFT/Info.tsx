@@ -353,7 +353,7 @@ export default function Info() {
                 <>
                   <div className="mt-10 p-10 text-gray-700">
 
-                    Please apprve the creation of the DEX contract for this NFT.
+                    Please approve the creation of the DEX contract for this NFT.
                     This contract manages all the liquidity pool functions for tokenization of this particular NFT
 
                   </div>
@@ -361,7 +361,7 @@ export default function Info() {
                   <>
                     <div className="mt-10 p-10 text-gray-700">
 
-                      Please apprve the creation of the DEX contract for this NFT.
+                      Please approve the creation of the DEX contract for this NFT.
                       This contract manages all the liquidity pool functions for tokenization of this particular NFT
 
                     </div>
@@ -377,8 +377,7 @@ export default function Info() {
                         <div className="mt-10 py-10 text-gray-700">
 
                           Please approve the DEX tokens to transfer and manage this NFTs custom fractional tokens.
-                          <br />
-                          Note there will be two approvals in your connected wallet
+                         
                         </div>
                       </> : stage === "lock" ?
                         <>

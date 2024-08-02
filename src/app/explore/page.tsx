@@ -55,11 +55,11 @@ function Explore() {
   }, [])
 
   return (
-    <div className="bg-white ">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl py-16 sm:py-24 lg:max-w-none lg:py-32">
-          <div className="flex justify-between items-center">
-
+    <div className="bg-white h-[100vh] overflow-y-scroll no-scrollbar">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 ">
+        <div className="mx-auto max-w-2xl py-16 sm:py-24 lg:max-w-none lg:py-32 ">
+          <div className="flex justify-between items-center pr-11">
+ 
             <h2 className="text-2xl font-semibold text-gray-500">Nfts</h2>
             <div className='flex gap-4 '>
               <div className="rounded-lg p-2 text-gray-500 opacity-100  hover:opacity-75   
@@ -72,9 +72,9 @@ function Explore() {
             </div>
           </div>
 
-          <div className="mt-6 gap-y-8 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-2 lg:space-y-0">
+          <div className="mt-6 gap-y-8 sm:grid sm:grid-cols-2 lg:grid lg:grid-cols-3 lg:gap-x-2 lg:space-y-0 ">
             {nftCards.map((card: ExploreCard, index: number) => (
-              <div key={index} className=" relative overflow-hidden border w-[22rem] h-[26rem] z-2  rounded-xl">
+              <div key={index} className=" relative overflow-hidden border sm:w-[16rem] sm:h-[20rem] md:w-[18rem] md:h-[22rem] lg:w-[20rem] lg:h-[24rem] z-2  rounded-xl">
                 <Link href={card.href}>
                   <div className='h-4/5 w-full relative overflow-hidden'>
 
@@ -85,7 +85,7 @@ function Explore() {
                     <h3 className=" text-sm text-gray-500">
                       {card.name}
                     </h3>
-                    <p className="text-base font-semibold text-gray-900">{'some description'}</p>
+                    <p className="text-base font-semibold text-gray-900">{card.description}</p>
                   </div>
                 </Link>
               </div>

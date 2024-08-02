@@ -6,7 +6,7 @@ import { useContext, useEffect, useState } from 'react'
 import { ProviderContext } from '@/Functions/Contexts'
 import { connectToWalet } from '@/Functions/BlockchainFunctions'
 import Link from 'next/link'
-import { useParams, usePathname } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 
 
 function classNames(...classes: any) {
@@ -22,7 +22,7 @@ export default function Navbar() {
     { name: 'Explore', href: '/explore', current: false },
     { name: 'Create', href: '/add', current: false },
   ])
-
+  const router = useRouter()
 
   const pathName = usePathname()
   const loadAccount = async () => {
@@ -33,17 +33,19 @@ export default function Navbar() {
       setAccount(tempAccount)
     }
   }
-  const setCurrentNavbarOption = () => {
+  const setCurrentNavbarOption = (updatedPath: string) => {
     let tempNav = navigation;
-    for (let x = 0;x<tempNav.length;x++) {
-      console.log(pathName, tempNav[x].href)
-      if (pathName === tempNav[x].href) {
+    for (let x = 0; x < tempNav.length; x++) {
+      console.log(updatedPath, tempNav[x].href)
+      if (updatedPath === tempNav[x].href) {
         tempNav[x].current = true;
       } else {
         tempNav[x].current = false;
       }
     }
-    setNavigation(tempNav)
+
+    console.log(tempNav)
+    setNavigation([...tempNav])
 
   }
   const handleClick = async () => {
@@ -57,14 +59,14 @@ export default function Navbar() {
     loadAccount()
   }, [isConnected])
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log("changed")
-    setCurrentNavbarOption()
-  },[pathName])
+    setCurrentNavbarOption(pathName)
+  }, [pathName])
 
   useEffect(() => {
     loadAccount()
-    setCurrentNavbarOption()
+    setCurrentNavbarOption("/")
 
   }, [])
   return (
@@ -90,18 +92,27 @@ export default function Navbar() {
             </Link>
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
-                {navigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    aria-current={item.current ? 'page' : undefined}
-                    className={classNames(
-                      item.current ? 'bg-gray-200 text-geay-400' : 'text-gray-400 hover:bg-gray-700 hover:text-white',
-                      'rounded-md px-3 py-2 text-sm font-medium',
-                    )}
-                  >
-                    {item.name}
-                  </Link>
+                {navigation && navigation.map((item) => (
+                  <>
+                    {item.current ?
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className={" rounded-md px-3 py-2 text-sm font-medium bg-gray-200 text-gray-400"}
+                      >
+                        {item.name}
+                      </Link>
+                      :
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className={" rounded-md px-3 py-2 text-sm font-medium text-gray-400 hover:bg-gray-700 hover:text-white"}
+                      >
+                        {item.name}
+                      </Link>
+                    }
+                  </>
+
                 ))}
               </div>
             </div>
@@ -148,7 +159,7 @@ export default function Navbar() {
           </div>
         </div>
         {!account && <div className='flex justify-center w-full text-xs text-red-500 bg-white py-1 rounded-md'>
-            Your wallet isnt connected, this could prevent  in-app features
+          Your wallet isnt connected, this could prevent  in-app features
         </div>}
       </div>
 
