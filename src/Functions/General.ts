@@ -1,6 +1,14 @@
 import { UploadStages } from "../../types/newFraction";
 export const  STAGES = ["loadNFT" , "basicValues" , "createDex" , "createSupabase" , "approvalNFT", "approvalToken" , "lock" , "liquidity", "Done"]
+export const SCREENS = {
  
+    sm: 640,
+    md: 768,
+    lg: 1024,
+    xl: 1280,
+    '2xl': 1536,
+  
+}
 export function toIPFS(baseURL:string){
   let ipfsURL = "https://ipfs.io/ipfs/"+ baseURL.substring(baseURL.indexOf("/")+2)
   return ipfsURL

@@ -320,7 +320,7 @@ export default function Info() {
                       <input
                         onChange={(e) => { setConfig({ ...config, initialLiquidityTokens: e.target.value }) }}
                         value={config.initialLiquidityTokens}
-                        placeholder='APE'
+                        placeholder='1000'
 
                         type="number"
                         autoComplete="given-name"
@@ -337,7 +337,7 @@ export default function Info() {
                       <input
                         onChange={(e) => { setConfig({ ...config, initialLiquidityValue: e.target.value }) }}
                         value={config.initialLiquidityValue}
-                        placeholder='ARTAPE'
+                        placeholder='0.2'
 
                         type="number"
                         autoComplete="family-name"

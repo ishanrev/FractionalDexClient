@@ -75,7 +75,12 @@ function NFTNotification({
                   </>
                   :
                   <>
-                    The transaction failed because the transaction was {transaction.error}
+                  {
+                    transaction.error!==undefined?
+                    `The transaction failed because the transaction was ${transaction.error}`:
+                    ""
+                  }
+                    
                   </>
                 }
               </p>

@@ -1,7 +1,6 @@
 // @ts-nocheck
 
-import { useRef, useEffect } from 'react';
-
+import { useRef, useEffect, useState } from 'react';
 export const useDebounce = () => {
   const timeout = useRef();
 
@@ -27,4 +26,27 @@ export const useIsMount = () => {
   }, []);
   return isMountRef.current;
 };
-  
+
+
+function getWindowDimensions() {
+  const { innerWidth: width, innerHeight: height } = window;
+  return {
+    width,
+    height
+  };
+}
+
+export default function useWindowDimensions() {
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowDimensions(getWindowDimensions());
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return windowDimensions;
+}

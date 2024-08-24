@@ -5,14 +5,14 @@ import { JsonRpcSigner } from "ethers";
 import { ethers, BrowserProvider, TransactionRequest } from "ethers";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
-import { getMainForTokens, getTokenBalance, getTokensForMain, swapMainForTokens, swapTokensForMain } from "@/Functions/BlockchainFunctions";
+import { addLiquidity, getMainForTokens, getTokenBalance, getTokensForMain, swapMainForTokens, swapTokensForMain } from "@/Functions/BlockchainFunctions";
 import { getListOfNfts, getNft } from "@/Functions/SupabaseFuncs";
 import { useParams } from "next/navigation";
 import { NFTInfo, Transaction } from "../../../../types/general";
 import { Database } from "../../../../types/supabase";
-import { emptyValue, toIPFS } from "@/Functions/General";
+import { emptyValue, SCREENS, toIPFS } from "@/Functions/General";
 import SwapToken from "@/app/Components/Dex/SwapToken";
-import { useDebounce } from "@/Functions/Hooks";
+import useWindowDimensions, { useDebounce } from "@/Functions/Hooks";
 import { ProviderContext } from "@/Functions/Contexts";
 import NFTSummary from "@/app/Components/Dex/NFTSummary";
 import Copy from "@/app/Components/General/Copy";
@@ -20,6 +20,7 @@ import NFTNotification from "@/app/Components/Dex/NFTNotification";
 import { useRouter } from "next/navigation";
 import ReactLoading from 'react-loading';
 import Loading from "@/app/Components/General/Loading";
+import AddLiquidity from "@/app/Components/Dex/AddLiquidity";
 
 declare var window: any
 
@@ -34,11 +35,14 @@ export default function NFTProfile() {
 	const { debounce } = useDebounce()
 	const { provider } = useContext(ProviderContext)
 	const [swapping, setSwapping] = useState<boolean>(false)
+	const [reloadShares, setReloadShares] = useState<boolean>(false)
 	const router = useRouter()
+	const { width } = useWindowDimensions()
 	const [transaction, setTransaction] = useState<Transaction>({
 		success: false,
 
 	})
+	const [addLiquidity, setAddLiquidity] = useState<boolean>(false)
 
 	const handleNativeChange = async (newValue: string) => {
 		if (emptyValue(newValue)) return
@@ -133,131 +137,139 @@ export default function NFTProfile() {
 		}
 	}
 
+	
+
 	return (
-		<main className="flex bg-white min-h-screen flex-col items-center justify-between p-20 px-16 xl:px-48">
-
+		<main className="flex bg-white min-h-screen flex-col items-center w-screen justify-between p-10  xl:px-48">
+			{nft && <AddLiquidity setReloadShares={setReloadShares} dexAddress={nft.dex_address!} isOpen = {addLiquidity} setIsOpen={setAddLiquidity}/>}
 			{nft && <NFTNotification setSwapping={setSwapping} swapping={swapping} tokenValue={tokenValue} ethValue={ethValue} type={type} transaction={transaction} nft={nft} />}
-			{nft && <div className="mt-8 grid   gap-8 w-full h-[80vh] 2xl:max-w-[70%]">
-				<div className="  flex flex-col justify-start items-center  w-full  rounded-lg">
+			{nft &&
+				<div className="mt-8 grid grid-cols-3  gap-8 2xl:max-w-[70%]">
+					<div className=" overflow-hidden col-span-3 sm:col-span-3 md:col-span-1 lg:flex lg:flex-col justify-start items-center  w-full  rounded-lg">
 
-					{nft?.metadata?.image && nft?.metadata?.image !== "" &&
-						<Image src={toIPFS(nft?.metadata?.image)}
-							width={400}
-							height={160}
-							className="  rounded-md whitespace-nowrap my-2  text-sm text-gray-300"
-							alt="NFT Image"
-						/>}
+						{nft?.metadata?.image && nft?.metadata?.image !== "" &&
+							<Image src={toIPFS(nft?.metadata?.image)}
+								width={width > SCREENS.sm ? 420 : 250}
+								height={width > SCREENS.sm ? 160 : 80}
+								className=" zoom rounded-md whitespace-nowrap my-2  text-sm text-gray-300"
+								alt="NFT Image"
+							/>}
 
-				</div>
-				<div className="h-full  bg-white rounded-lg">
-					{nft && <NFTSummary nft={nft} swapping={swapping} />}
-				</div>
-				<div className="h-full bg-back border-t border-gray-300 gap-6 flex justify-between  col-span-3 row-span-1   bg">
-					<div className="flex flex-col py-4 gap-4 w-2/5">
+					</div>
+					<div className="h-full sm:col-span-3 col-span-3 md:col-span-2 lg:col-span2  bg-white rounded-lg">
+						{nft && <NFTSummary reloadShares={reloadShares} nft={nft} swapping={swapping} />}
+					</div>
+					<div className="h-full bg-back border-t border-gray-300 gap-6 flex flex-col sm:flex-row justify-between  col-span-3 row-span-1   bg">
+						<div className="flex flex-col py-4 gap-4 w-full sm:w-2/5">
 
-						<div className="bg-[#f9f9f9] p-4 flex justify-between gap-4 rounded-lg ">
-							<input
-								type="number"
-								placeholder="0.0"
-								value={tokenValue}
-								onChange={onTokenChange}
+							<div className="bg-[#f9f9f9] p-4 flex justify-between gap-4 rounded-lg ">
+								<input
+									type="number"
+									placeholder="0.0"
+									value={tokenValue}
+									onChange={onTokenChange}
 
-								className="bg-transparent w-4/5 text-text"
-							/>
-							<span className="text-text"> {nft?.token_symbol && nft.token_symbol}</span>
-						</div>
-						<div className=" flex justify-center items-center">{nft?.token_symbol &&
-							<span className="text-text text-sm">
+									className="bg-transparent w-4/5 text-text"
+								/>
+								<span className="text-text"> {nft?.token_symbol && nft.token_symbol}</span>
+							</div>
+							<div className=" flex justify-center items-center">{nft?.token_symbol &&
+								<span className="text-text text-sm">
 
-								{nft?.token_symbol && (type === "native" ? nft?.token_symbol + ' -> ' + 'ETH' : 'ETH' + ' -> ' + nft?.token_symbol)}
+									{nft?.token_symbol && (type === "native" ? nft?.token_symbol + ' -> ' + 'ETH' : 'ETH' + ' -> ' + nft?.token_symbol)}
 
-							</span>}</div>
-						<div className="bg-[#f9f9f9] p-4 flex justify-between gap-4 rounded-lg ">
-							<input
-								type="number"
+								</span>}</div>
+							<div className="bg-[#f9f9f9] p-4 flex justify-between gap-4 rounded-lg ">
+								<input
+									type="number"
 
-								placeholder="0.0"
-								value={ethValue}
-								onChange={onEthChange}
+									placeholder="0.0"
+									value={ethValue}
+									onChange={onEthChange}
 
-								className="bg-transparent w-4/5 text-text"
-							/>
-							<span className="text-text"> ETH </span>
-
-						</div>
-
-						<div className="w-full">
-
-							<div className="flex gap-2 w-full justify-end">
-								{
-									nft?.token_symbol && <button onClick={() => { swap() }} disabled={swapping} className="rounded-lg disabled:opacity-30 text-white text-center w-full p-3 py-2 bg-button-secondary cursor-pointer">
-										{swapping ?
-											<>
-												{/* Loading component */}
-												<Loading />
-											</> : <>
-												{`Swap ${nft?.token_symbol + '  / ' + 'ETH'}`}
-											</>}
-									</button>
-								}
-
+									className="bg-transparent w-4/5 text-text"
+								/>
+								<span className="text-text"> ETH </span>
 
 							</div>
-							{/* <div className="flex gap-2 bg justify-end">
+
+							<div className="w-full flex justify-between gap-4">
+								<button onClick={() => { setAddLiquidity(true) }} className="rounded-lg  text-xs lg:text-base hover:opacity-75 disabled:opacity-30 text-white text-center w-full p-3 py-2 bg-button-secondary cursor-pointer">
+									Add Liquidity
+								</button>
+								<div className="flex hover:opacity-75 gap-2 w-full justify-end">
+									{
+										nft?.token_symbol && <button onClick={() => { swap() }} disabled={swapping} className="rounded-lg text-xs lg:text-base  disabled:opacity-30 text-white text-center w-full p-3 py-1 bg-button-secondary cursor-pointer">
+											{swapping ?
+												<>
+													{/* Loading component */}
+													<Loading />
+												</> : <>
+													{`Swap ${nft?.token_symbol + '  / ' + 'ETH'}`}
+												</>}
+										</button>
+									}
+
+
+								</div>
+
+								{/* <div className="flex gap-2 bg justify-end">
 								<button className="rounded-lg bg-background p-3 py-2 text-button-primary">
 									Swap
 								</button>
 
 							</div> */}
+							</div>
+						</div>
+						<div className="flex flex-col sm:w-1/2">
+
+							<div className="flex w-full ">
+								<div className="flex flex-col py-4 gap-4 h-3/5 w-1/2 ">
+
+									<div className="px-4 sm:px-0">
+										<h3 className="text-base font-semibold leading-7 text-gray-500">List of Owners</h3>
+									</div>
+									<div className="overflow-y-scroll no-scrollbar">
+										{nft?.fractional_owners && nft.fractional_owners.map((owner, index) => {
+											return (
+												<div key={index}>
+													<span className="p-1">
+														<Copy text={owner} length={8} />
+													</span>
+
+												</div>
+											)
+										})}
+									</div>
+
+
+								</div>
+								<div className="flex flex-col py-4 gap-4 h-3/5 w-1/2 ">
+
+									<div className="px-4 sm:px-0">
+										<h3 className="text-base font-semibold leading-7 text-gray-500">Liquidity Providers</h3>
+									</div>
+									<div className="overflow-y-scroll no-scrollbar">
+										{nft?.liquidity_providers && nft.liquidity_providers.map((owner, index) => {
+											return (
+												<div key={index}>
+													<span className="p-1">
+														<Copy text={owner} length={8} />
+													</span>
+
+												</div>
+											)
+										})}
+									</div>
+
+
+								</div>
+							</div>
+
 						</div>
 					</div>
-					<div className="flex w-1/2">
-						<div className="flex flex-col py-4 gap-4 h-3/5 w-1/2 ">
 
-							<div className="px-4 sm:px-0">
-								<h3 className="text-base font-semibold leading-7 text-gray-500">List of Owners</h3>
-								<p className="mt-1 max-w-2xl text-sm leading-6 text-gray-900">NFT details and information.</p>
-							</div>
-							<div className="overflow-y-scroll no-scrollbar">
-								{nft?.fractional_owners && nft.fractional_owners.map((owner, index) => {
-									return (
-										<div key={index}>
-											<span className="p-1">
-												<Copy text={owner} length={8} />
-											</span>
-
-										</div>
-									)
-								})}
-							</div>
-
-
-						</div>
-						<div className="flex flex-col py-4 gap-4 h-3/5 w-1/2 ">
-
-							<div className="px-4 sm:px-0">
-								<h3 className="text-base font-semibold leading-7 text-gray-500">Liquidity Providers</h3>
-								<p className="mt-1 max-w-2xl text-sm leading-6 text-gray-900">NFT details and information.</p>
-							</div>
-							<div className="overflow-y-scroll no-scrollbar">
-								{nft?.liquidity_providers && nft.liquidity_providers.map((owner, index) => {
-									return (
-										<div key={index}>
-											<span className="p-1">
-												<Copy text={owner} length={8} />
-											</span>
-
-										</div>
-									)
-								})}
-							</div>
-
-						</div>
-					</div>
-
-				</div>
-
-			</div>}
+				</div>}
 		</main>
 	);
 }

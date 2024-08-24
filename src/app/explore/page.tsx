@@ -7,12 +7,14 @@ import Image from 'next/image'
 import { toIPFS } from '@/Functions/General'
 import Link from 'next/link'
 import { PlusIcon } from '@heroicons/react/24/outline'
+import { useRouter } from 'next/navigation'
 
 function Explore() {
 
   const [nftCards, setNftCards] = useState<ExploreCard[]>([])
   const [search, setSearch] = useState<any>({})
   const { provider } = useContext(ProviderContext)
+  const router = useRouter();
   const loadCards = async () => {
     try {
       // const signer = await provider?.getSigner()
@@ -58,8 +60,8 @@ function Explore() {
     <div className="bg-white h-[100vh] overflow-y-scroll no-scrollbar">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 ">
         <div className="mx-auto max-w-2xl py-16 sm:py-24 lg:max-w-none lg:py-32 ">
-          <div className="flex justify-between items-center pr-11">
- 
+          <div className=" flex flex-col  justify-between md:flex-row xs:items-center ">
+
             <h2 className="text-2xl font-semibold text-gray-500">Nfts</h2>
             <div className='flex gap-4 '>
               <div className="rounded-lg p-2 text-gray-500 opacity-100  hover:opacity-75   
@@ -71,25 +73,28 @@ function Explore() {
 
             </div>
           </div>
+          <div className='w-full flex justify-center'>
 
-          <div className="mt-6 gap-y-8 sm:grid sm:grid-cols-2 lg:grid lg:grid-cols-3 lg:gap-x-2 lg:space-y-0 ">
-            {nftCards.map((card: ExploreCard, index: number) => (
-              <div key={index} className=" relative overflow-hidden border sm:w-[16rem] sm:h-[20rem] md:w-[18rem] md:h-[22rem] lg:w-[20rem] lg:h-[24rem] z-2  rounded-xl">
-                <Link href={card.href}>
-                  <div className='h-4/5 w-full relative overflow-hidden'>
+            <div className="mt-6 sm:gap-x-4 grid grid-cols-1 gap-y-8 sm:grid sm:grid-cols-2 lg:grid lg:grid-cols-3 lg:gap-x-2 lg:space-y-0 items-center">
 
-                    <Image src={card.image} fill className="zoom cursor-pointer whitespace-nowrap " alt="NFT Image" />
-                  </div>
-                  <div className="p-3">
+              {nftCards.map((card: ExploreCard, index: number) => (
+                <div key={index} className=" relative overflow-hidden border w-[14rem] h-[16rem] sm:w-[16rem] sm:h-[20rem] md:w-[18rem] md:h-[22rem] lg:w-[20rem] lg:h-[24rem] z-2  rounded-xl">
+                  <Link href={card.href}>
+                    <div className='h-4/5 w-full relative overflow-hidden' >
 
-                    <h3 className=" text-sm text-gray-500">
-                      {card.name}
-                    </h3>
-                    <p className="text-base font-semibold text-gray-900">{card.description}</p>
-                  </div>
-                </Link>
-              </div>
-            ))}
+                      <Image src={card.image} fill className="zoom cursor-pointer whitespace-nowrap " alt="NFT Image"  />
+                    </div>
+                    <div className="p-3">
+
+                      <h3 className=" text-sm text-gray-500">
+                        {card.name}
+                      </h3>
+                      <p className="text-base font-semibold text-gray-900">{card.description}</p>
+                    </div>
+                  </Link>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

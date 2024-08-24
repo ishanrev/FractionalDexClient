@@ -25,7 +25,7 @@ export default function RootLayout({
       <ProviderProvider>
 
         <body className={inter.className}>
-          <div className="">
+          <div className=" w-screen h-screen">
             <Navbar />
             <div className="no-scrollbar ">
 

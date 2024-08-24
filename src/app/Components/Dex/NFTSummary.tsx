@@ -9,10 +9,12 @@ import { getTokenBalance } from '@/Functions/BlockchainFunctions'
 import { truncateValue } from '@/Functions/General'
 
 function NFTSummary({
+  reloadShares,
   nft,
   swapping,
   onlyDisplay = false
 }: {
+  reloadShares?:boolean,
   nft: Database['public']['Tables']['nfts']['Row'],
   swapping?: boolean,
   onlyDisplay?:boolean
@@ -26,7 +28,7 @@ function NFTSummary({
     try {
       const signer = await provider?.getSigner()
       if (!signer) {
-        throw ("no signer avaailable")
+        throw ("no signer available")
       }
       let account = await signer.getAddress()
       const loadedShare = await getTokenBalance(signer, account ?? "", nft.token_address ?? "")
@@ -42,11 +44,12 @@ function NFTSummary({
 
   useEffect(()=>{
     loadShares()
-  },[provider])
+  },[provider, reloadShares])
 
   useEffect(() => {
     loadShares()
   }, [])
+  
 
   useEffect(() => {
     if (swapping === false && !onlyDisplay) {
@@ -56,7 +59,7 @@ function NFTSummary({
   }, [swapping])
 
   return (
-    <div className='p-4 flex flex-col gap-6'>
+    <div className='p-4 flex flex-col gap-6 lg:max-w-[65%] xl:max-w-[55%]'>
       <div>
         <div className="px-4 sm:px-0">
           <h3 className="text-base font-semibold leading-7 text-gray-500">NFT Information</h3>

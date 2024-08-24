@@ -228,7 +228,6 @@ export async function addLiquidity(signer: JsonRpcSigner, config:NewFraction): P
 	try{
 		const account = await signer.getAddress()
 		const dexContract:Contract = new ethers.Contract(config.dexAddress!, NFTDex.abi, signer)
-		const numTokensInWei = ethers.parseUnits(config.numFractionalTokens!)
 		const transactionMetadata = {
 			value: ethers.parseUnits(config.initialLiquidityValue!)
 		}
