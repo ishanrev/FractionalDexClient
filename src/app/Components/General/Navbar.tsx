@@ -15,7 +15,7 @@ function classNames(...classes: any) {
 
 export default function Navbar() {
 
-  const { isConnected, provider, setProvider, setIsConnected } = useContext(ProviderContext)
+  const { isConnected, provider, setProvider, setIsConnected, accountChanged } = useContext(ProviderContext)
   const [account, setAccount] = useState<string>("")
   const [navigation, setNavigation] = useState([
     { name: 'Home', href: '/', current: false },
@@ -33,6 +33,8 @@ export default function Navbar() {
       setAccount(tempAccount)
     }
   }
+
+  
   const setCurrentNavbarOption = (updatedPath: string) => {
     let tempNav = navigation;
     for (let x = 0; x < tempNav.length; x++) {
@@ -57,7 +59,7 @@ export default function Navbar() {
 
   useEffect(() => {
     loadAccount()
-  }, [isConnected])
+  }, [isConnected, accountChanged])
 
   useEffect(() => {
     console.log("changed")

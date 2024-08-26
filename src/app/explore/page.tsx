@@ -17,10 +17,7 @@ function Explore() {
   const router = useRouter();
   const loadCards = async () => {
     try {
-      // const signer = await provider?.getSigner()
-      // if (!signer) {
-      //   throw ("no signer avaailable")
-      // }
+     
       const nfts = await getExploreNFTs(search)
       let temp: ExploreCard[] = []
 
@@ -60,7 +57,7 @@ function Explore() {
     <div className="bg-white h-[100vh] overflow-y-scroll no-scrollbar">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 ">
         <div className="mx-auto max-w-2xl py-16 sm:py-24 lg:max-w-none lg:py-32 ">
-          <div className=" flex flex-col  justify-between md:flex-row xs:items-center ">
+          <div className=" flex flex-col  justify-between  xs:items-center ">
 
             <h2 className="text-2xl font-semibold text-gray-500">Nfts</h2>
             <div className='flex gap-4 '>
@@ -73,12 +70,13 @@ function Explore() {
 
             </div>
           </div>
-          <div className='w-full flex justify-center'>
+          <div className='w-full  '>
 
-            <div className="mt-6 sm:gap-x-4 grid grid-cols-1 gap-y-8 sm:grid sm:grid-cols-2 lg:grid lg:grid-cols-3 lg:gap-x-2 lg:space-y-0 items-center">
+            {/* <div className="mt-6 sm:gap-x-4 grid grid-cols-1 gap-y-8  sm:grid-cols-2  lg:grid-cols-3 justify-between "> */}
+            <div className="mt-6  gap-x-4 gap-y-6 flex justify-start flex-wrap">
 
               {nftCards.map((card: ExploreCard, index: number) => (
-                <div key={index} className=" relative overflow-hidden border w-[14rem] h-[16rem] sm:w-[16rem] sm:h-[20rem] md:w-[18rem] md:h-[22rem] lg:w-[20rem] lg:h-[24rem] z-2  rounded-xl">
+                <div key={index} className=" relative overflow-hidden border w-[14rem] h-[16rem] sm:w-[16rem] sm:h-[20rem] md:w-[18rem] md:h-[22rem] lg:w-[18rem] lg:h-[22rem] z-2  rounded-xl">
                   <Link href={card.href}>
                     <div className='h-4/5 w-full relative overflow-hidden' >
 

@@ -5,7 +5,7 @@ import { JsonRpcSigner } from "ethers";
 import { ethers, BrowserProvider, TransactionRequest } from "ethers";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
-import { addLiquidity, getMainForTokens, getTokenBalance, getTokensForMain, swapMainForTokens, swapTokensForMain } from "@/Functions/BlockchainFunctions";
+import { addLiquidity, approveTransferOfAssetToken, getMainForTokens, getTokenBalance, getTokensForMain, swapMainForTokens, swapTokensForMain } from "@/Functions/BlockchainFunctions";
 import { getListOfNfts, getNft } from "@/Functions/SupabaseFuncs";
 import { useParams } from "next/navigation";
 import { NFTInfo, Transaction } from "../../../../types/general";
@@ -72,7 +72,7 @@ export default function NFTProfile() {
 
 	const params = useParams()
 	useEffect(() => {
-
+		console.log(nft)
 		console.log(provider)
 		if (params) {
 			console.log(params)
@@ -87,6 +87,7 @@ export default function NFTProfile() {
 			console.log(tempNFT)
 		} catch (nftError) {
 			console.log(nftError)
+			setNft(null)
 			router.push("/404")
 		}
 	}
@@ -112,6 +113,14 @@ export default function NFTProfile() {
 			if (nft?.dex_address && provider) {
 
 				let signer = await provider?.getSigner() as JsonRpcSigner
+				let account = await signer.getAddress()
+				//Checks if the current user is one of the fractional owners, if not they need approval themselves
+				if (!nft?.fractional_owners?.includes(account)) {
+					let approvalResponse = await approveTransferOfAssetToken(signer, account, nft?.token_address!)
+					if(!approvalResponse){
+						throw("")
+					}
+				}
 				let res;
 				if (type === "native") {
 
@@ -126,7 +135,7 @@ export default function NFTProfile() {
 					success: true
 				})
 			} else {
-				throw ("provider missing or nft information missing")
+				throw ("provider missing or nft information missing or user does not have approval to accept these tokens")
 			}
 		} catch (swapError: any) {
 			console.log(typeof (swapError))
@@ -137,11 +146,11 @@ export default function NFTProfile() {
 		}
 	}
 
-	
+
 
 	return (
 		<main className="flex bg-white min-h-screen flex-col items-center w-screen justify-between p-10  xl:px-48">
-			{nft && <AddLiquidity setReloadShares={setReloadShares} dexAddress={nft.dex_address!} isOpen = {addLiquidity} setIsOpen={setAddLiquidity}/>}
+			{nft && <AddLiquidity tokenAddress={nft.token_address!} setReloadShares={setReloadShares} dexAddress={nft.dex_address!} isOpen={addLiquidity} setIsOpen={setAddLiquidity} />}
 			{nft && <NFTNotification setSwapping={setSwapping} swapping={swapping} tokenValue={tokenValue} ethValue={ethValue} type={type} transaction={transaction} nft={nft} />}
 			{nft &&
 				<div className="mt-8 grid grid-cols-3  gap-8 2xl:max-w-[70%]">
@@ -151,7 +160,7 @@ export default function NFTProfile() {
 							<Image src={toIPFS(nft?.metadata?.image)}
 								width={width > SCREENS.sm ? 420 : 250}
 								height={width > SCREENS.sm ? 160 : 80}
-								className=" zoom rounded-md whitespace-nowrap my-2  text-sm text-gray-300"
+								className="  rounded-md whitespace-nowrap   text-sm text-gray-300"
 								alt="NFT Image"
 							/>}
 
@@ -194,9 +203,11 @@ export default function NFTProfile() {
 							</div>
 
 							<div className="w-full flex justify-between gap-4">
-								<button onClick={() => { setAddLiquidity(true) }} className="rounded-lg  text-xs lg:text-base hover:opacity-75 disabled:opacity-30 text-white text-center w-full p-3 py-2 bg-button-secondary cursor-pointer">
+
+								<button disabled={provider === null} onClick={() => { setAddLiquidity(true) }} className="rounded-lg  text-xs lg:text-base hover:opacity-75 disabled:opacity-30 text-white text-center w-full p-3 py-2 bg-button-secondary cursor-pointer">
 									Add Liquidity
 								</button>
+
 								<div className="flex hover:opacity-75 gap-2 w-full justify-end">
 									{
 										nft?.token_symbol && <button onClick={() => { swap() }} disabled={swapping} className="rounded-lg text-xs lg:text-base  disabled:opacity-30 text-white text-center w-full p-3 py-1 bg-button-secondary cursor-pointer">

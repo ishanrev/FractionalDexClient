@@ -44,6 +44,7 @@ function NFTNotification({
   }, [])
 
   useEffect(() => {
+    console.log(transaction.error)
     if (isOpen === undefined) {
       setIsOpen(false)
     } else {
@@ -77,7 +78,7 @@ function NFTNotification({
                   <>
                   {
                     transaction.error!==undefined?
-                    `The transaction failed because the transaction was ${transaction.error}`:
+                    `${transaction.error}`:
                     ""
                   }
                     

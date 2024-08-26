@@ -7,15 +7,18 @@ import { Database } from '../../../../types/supabase'
 import { PaperClipIcon } from '@heroicons/react/20/solid'
 import Copy from '../General/Copy'
 import { ProviderContext } from '@/Functions/Contexts'
-import { addLiquidity, getTokenBalance } from '@/Functions/BlockchainFunctions'
+import { addLiquidity, getMinTokensForAddingLiquidity, getTokenBalance } from '@/Functions/BlockchainFunctions'
 import { truncateValue } from '@/Functions/General'
+import { useDebounce } from '@/Functions/Hooks'
 
 function AddLiquidity({
   dexAddress,
+  tokenAddress,
   isOpen,
   setIsOpen,
   setReloadShares
 }: {
+  tokenAddress:string,
   dexAddress: string,
   isOpen: boolean,
   setIsOpen: Dispatch<SetStateAction<boolean>>,
@@ -23,16 +26,29 @@ function AddLiquidity({
 
 
 }) {
-  const [addTokens, setAddTokens] = useState<string>("")
+  const {debounce} = useDebounce()
+  const { provider, setProvider } = useContext(ProviderContext)
+  const [ minimum, setMinimum ] = useState<string>("")
   const [liquidity, setLiquidity] = useState<{
     initialLiquidityTokens: string,
     initialLiquidityValue: string
   }>({
-    initialLiquidityTokens:  "",
-    initialLiquidityValue:  ""
+    initialLiquidityTokens: "",
+    initialLiquidityValue: ""
   })
-  const [addEth, setAddEth] = useState<string>("~")
-  const { provider, setProvider } = useContext(ProviderContext)
+  const handleEthChange = async (value:string) => {
+    try {
+      let signer = await provider?.getSigner();
+      if(!signer) throw("No Signer Available")
+      let newMinimum = await getMinTokensForAddingLiquidity(provider!, signer, value, dexAddress, tokenAddress )
+      setMinimum(newMinimum)
+    }catch(error){
+      console.log(error)
+    }
+  }
+  const debouncedMinimumTokens = debounce(handleEthChange, 1500)
+
+
 
   function close() {
     setIsOpen(false)
@@ -52,7 +68,7 @@ function AddLiquidity({
         ...liquidity
       })
       setIsOpen(false)
-      setReloadShares((value)=>{
+      setReloadShares((value) => {
         return !value
       })
     } catch (err) {
@@ -60,6 +76,11 @@ function AddLiquidity({
     }
   }
 
+  function calculateMinimum(): string {
+    let value = ""
+
+    return value;
+  }
 
   useEffect(() => {
   }, [])
@@ -81,39 +102,46 @@ function AddLiquidity({
                 Add Liquidity
               </DialogTitle>
               <p className="mt-2 text-sm/6 text-gray-600">
-              <div className="sm:col-span-3">
-                    <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
-                      Liquitity Tokens
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        onChange={(e) => { setLiquidity({ ...liquidity, initialLiquidityTokens: e.target.value }) }}
-                        value={liquidity.initialLiquidityTokens}
-                        placeholder='1000'
 
-                        type="number"
-                        autoComplete="given-name"
-                        className="block px-3 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-button-secondary sm:text-sm sm:leading-6"
-                      />
-                    </div>
-                  </div>
-                  <br />
-                  <div className="sm:col-span-3">
-                    <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-gray-900">
-                      Liquitity Value (ETH)
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        onChange={(e) => { setLiquidity({ ...liquidity, initialLiquidityValue: e.target.value }) }}
-                        value={liquidity.initialLiquidityValue}
-                        placeholder='0.3'
+                Minimum number of tokens needed to add Liquidity: {minimum}
+                <br />
+                <br />
+                <div className="sm:col-span-3">
+                  <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
+                    Liquitity Tokens
+                  </label>
+                  <div className="mt-2">
+                    <input
+                      onChange={(e) => { setLiquidity({ ...liquidity, initialLiquidityTokens: e.target.value }) }}
+                      value={liquidity.initialLiquidityTokens}
+                      placeholder='1000'
 
-                        type="number"
-                        autoComplete="family-name"
-                        className="block px-3 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-button-secondary sm:text-sm sm:leading-6"
-                      />
-                    </div>
+                      type="number"
+                      autoComplete="given-name"
+                      className="block px-3 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-button-secondary sm:text-sm sm:leading-6"
+                    />
                   </div>
+                </div>
+                <br />
+                <div className="sm:col-span-3">
+                  <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-gray-900">
+                    Liquitity Value (ETH)
+                  </label>
+                  <div className="mt-2">
+                    <input
+                      onChange={(e) => { 
+                        setLiquidity({ ...liquidity, initialLiquidityValue: e.target.value }) 
+                        debouncedMinimumTokens(e.target.value)
+                      }}
+                      value={liquidity.initialLiquidityValue}
+                      placeholder='0.3'
+
+                      type="number"
+                      autoComplete="family-name"
+                      className="block px-3 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-button-secondary sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                </div>
 
               </p>
               <div className="mt-4">

@@ -20,7 +20,6 @@ export const PLATFORM_ADDRESS = "0x9f889ee78F0B1E86d52Bb24367D889a0296Fa2dD"
 export const MAX_TRANSFER_TOKENS = "10000"
 export async function getTokenBalance(signer:Signer, accountAddress:string, tokenAddress:string) : Promise<{tokens:number, ownership:number}>{
 	try{
-		console.log(signer, accountAddress, tokenAddress)
 	const tokenContract:Contract = new ethers.Contract(tokenAddress, AssetToken.abi, signer)
 	
 	const balance = await tokenContract.balanceOf(accountAddress);
@@ -194,6 +193,7 @@ export async function approveTransferOfNFT(signer:Signer, dexAddress:string,nftA
 	}
 
 }
+//here dexAddress ciuld be the user address as well
 export async function approveTransferOfAssetToken(signer:Signer, dexAddress:string, tokenAddress:string) : Promise<boolean>{
 	try{
 		console.log(signer, dexAddress, tokenAddress)
@@ -239,5 +239,29 @@ export async function addLiquidity(signer: JsonRpcSigner, config:NewFraction): P
 	}catch(error){
 		console.log(error)
 		return false
+	}
+}
+
+export async function getMinTokensForAddingLiquidity(provider: Provider, signer:JsonRpcSigner, amount:string, dexAddress:string, tokenAddress:string):Promise<string>{
+	try{
+	const tokenContract:Contract = new ethers.Contract(tokenAddress, AssetToken.abi, signer)
+	
+	const decimals = await tokenContract.decimals()
+	const tokenReserve = await tokenContract.balanceOf(dexAddress);
+	const reservedEth = await provider.getBalance(dexAddress)
+	const formattedTokenReserve = ethers.formatUnits(tokenReserve, decimals)
+	const formattedReserveEth = ethers.formatUnits(reservedEth, decimals)
+	const tokenReserveNumber = parseFloat(formattedTokenReserve)
+	const reservedEthNumber = parseFloat(formattedReserveEth)
+	const ethAmountNumber = parseFloat(amount)
+	console.log(tokenReserveNumber, ethAmountNumber, reservedEthNumber)
+
+	const minimumAmount = (tokenReserveNumber* ethAmountNumber)/reservedEthNumber
+	return minimumAmount.toString();
+
+	
+	}catch(error){
+		console.log(error)
+		throw(error)
 	}
 }

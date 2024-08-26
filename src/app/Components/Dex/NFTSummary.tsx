@@ -104,10 +104,10 @@ function NFTSummary({
       {!onlyDisplay && <div className='rounded-lg bg-[#f9f9f9] p-4 w-full h-full'>
         <h3 className="text-base font-semibold mb-3 leading-7 text-gray-500">Your Balance / Fractional Share</h3>
         <div className='flex gap-24 justify-start'>
-          <span className='text-huge text-button-secondary'>
+          <span className='text-xl text-button-secondary'> 
             {share.tokens && nft.token_symbol && `${truncateValue(share.tokens.toString()) + ' ' + nft.token_symbol}`}
           </span>
-          <span className='text-huge text-button-secondary'>
+          <span className='text-xl text-button-secondary'>
             {share.ownership && `${truncateValue(share.ownership.toString())} %`}
 
           </span>

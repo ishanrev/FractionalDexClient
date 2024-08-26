@@ -2,7 +2,9 @@ import { NewFraction } from './../../types/newFraction';
 import { Database } from "../../types/supabase";
 import { SupabaseClient, createClient } from '@supabase/supabase-js'
 
-const supabase: SupabaseClient<Database> = createClient<Database>(process.env.SUPABASE_PROJECT_URL ||"", process.env.SUPABASE_ANON_KEY ||"")
+const projectURL = process.env.NODE_ENV==="production"?process.env.SUPABASE_PROJECT_URL_PRODUCTION: process.env.SUPABASE_PROJECT_URL
+const anonKey = process.env.NODE_ENV==="production"?process.env.SUPABASE_ANON_KEY_PRODUCTION: process.env.SUPABASE_ANON_KEY
+const supabase: SupabaseClient<Database> = createClient<Database>(projectURL ||"",anonKey ||"")
 
 
 export async function getListOfNfts(userAddress:string):Promise<Database['public']['Tables']['nfts']['Row'][]>{

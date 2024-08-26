@@ -32,32 +32,19 @@ interface Metadata {
 
 export default function Home() {
 
-  const { provider, setProvider, isConnected, setIsConnected } = useContext(ProviderContext)
+  const { provider, setProvider, isConnected, setIsConnected, accountChanged } = useContext(ProviderContext)
   const [account, setAccount] = useState<string>("null")
   const [myShares, setMyShares] = useState<SharesTableRow[]>()
   const { width } = useWindowDimensions()
-  const  router = useRouter()
+  const router = useRouter()
   useEffect(() => {
     if (isConnected) {
       loadShares()
     }
 
-  }, [isConnected])
-
-  useEffect(() => {
-    if (window.ethereum) {
-      window.ethereum.on("accountsChanged", handleAccountsChanged)
-    }
+  }, [isConnected, accountChanged])
 
 
-    return () => {
-      if (window.ethereum) {
-        window.ethereum.removeListener("accountsChanged", handleAccountsChanged)
-      } else {
-
-      }
-    }
-  }, [])
 
   const loadShares = async () => {
     try {
@@ -92,17 +79,6 @@ export default function Home() {
 
   }
 
-  const handleAccountsChanged = (accounts: any) => {
-    if (accounts.length > 0 && account !== accounts[0]) {
-      setAccount(accounts[0])
-
-      loadShares()
-
-    } else {
-      setIsConnected && setIsConnected(false)
-      setAccount("")
-    }
-  }
 
 
 
@@ -143,10 +119,10 @@ export default function Home() {
                 </tr>
               </thead>
               <tbody className=" gap-4">
-                {myShares && myShares.map((share, index) => (
+                {myShares && myShares.length > 0 && myShares.map((share, index) => (
                   <tr key={index} className="mt-4">
                     <td>
-                      {share.image && share.image !== "" && <Image onClick={()=>{router.push(`/${share.nftCollectionAddress}/${share.tokenId}`)}} src={toIPFS(share.image)} width={80} height={80} className=" cursor-pointer rounded-md whitespace-nowrap my-2  text-sm text-gray-500" alt="NFT Image" />}
+                      {share.image && share.image !== "" && <Image onClick={() => { router.push(`/${share.nftCollectionAddress}/${share.tokenId}`) }} src={toIPFS(share.image)} width={80} height={80} className=" cursor-pointer rounded-md whitespace-nowrap my-2  text-sm text-gray-500" alt="NFT Image" />}
                     </td>
 
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{truncateValue(share.tokens.toString()) + ' ' + share.tokenSymbol}</td>
@@ -165,9 +141,18 @@ export default function Home() {
                       </>}
                   </tr>
                 ))}
-
               </tbody>
             </table>
+            {myShares && myShares.length === 0 &&
+              <div className="w-full flex justify-center ">
+                <div className="flex flex-col gap-2 items-center">
+                  <br />
+                  <br />
+                  <span>You have no shares in any NFTs</span>
+                  <Link href="/explore" className="text-white text-center w-1/2 rounded-lg bg-button-secondary p-2">Explore</Link>
+                </div>
+              </div>
+            }
           </div>
         </div>
       </div>
