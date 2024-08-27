@@ -1,9 +1,11 @@
+'use client'
 import { NewFraction } from './../../types/newFraction';
 import { Database } from "../../types/supabase";
 import { SupabaseClient, createClient } from '@supabase/supabase-js'
+require('dotenv').config();
 
-const projectURL = process.env.NODE_ENV==="production"?process.env.SUPABASE_PROJECT_URL_PRODUCTION: process.env.SUPABASE_PROJECT_URL
-const anonKey = process.env.NODE_ENV==="production"?process.env.SUPABASE_ANON_KEY_PRODUCTION: process.env.SUPABASE_ANON_KEY
+const projectURL = process.env.NEXT_PUBLIC_NODE_ENV==="production"?process.env.NEXT_PUBLIC_SUPABASE_PROJECT_URL_PRODUCTION: process.env.NEXT_PUBLIC_SUPABASE_PROJECT_URL
+const anonKey = process.env.NEXT_PUBLIC_NODE_ENV==="production"?process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY_PRODUCTION: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 const supabase: SupabaseClient<Database> = createClient<Database>(projectURL ||"",anonKey ||"")
 
 
@@ -74,3 +76,21 @@ export async function addNFTRow(nft:any):Promise<boolean>{
         throw err;
     }
 }
+
+export async function addFractionalOwner(dexAddress:string, newOwners:string[]):Promise<Database['public']['Tables']['nfts']['Row']>{
+    const { data, error } = await supabase
+    .from('nfts')
+    .update({fractional_owners:newOwners})
+    .eq("dex_address", dexAddress)
+    .select('*')
+    
+    
+    
+    if(error || !data){
+        throw(error)
+    }
+    return data[0] 
+}
+
+
+

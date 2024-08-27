@@ -20,7 +20,7 @@ function NFTSummary({
   onlyDisplay?:boolean
 }) {
   const [share, setShare] = useState<NFTShare>({ tokens: null, ownership: null })
-  const { provider } = useContext(ProviderContext)
+  const { provider, accountChanged } = useContext(ProviderContext)
 
 
 
@@ -44,7 +44,7 @@ function NFTSummary({
 
   useEffect(()=>{
     loadShares()
-  },[provider, reloadShares])
+  },[provider, reloadShares, accountChanged])
 
   useEffect(() => {
     loadShares()

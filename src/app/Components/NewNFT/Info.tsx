@@ -47,7 +47,6 @@ export default function Info() {
     if (metadata) {
       setConfig({ ...config, metadata, fractionalOwners: [owner], liquidityProviders: [owner], owner })
       setStage(nextStage(stage))
-      console.log("success")
     } else {
       alert("Invalid NFT address")
     }
@@ -73,7 +72,6 @@ export default function Info() {
     if (dexAddress) {
       setConfig({ ...config, dexAddress, tokenAddress })
       setStage(nextStage(stage))
-      console.log("success")
     } else {
       alert("Failed to deploy the DEX")
     }
@@ -84,7 +82,6 @@ export default function Info() {
     let res = await addNFTRow(newFractionToSupabase(config))
     if (res) {
       setStage(nextStage(stage))
-      console.log("success")
     } else {
       alert("Invalid NFT address")
     }
@@ -99,7 +96,7 @@ export default function Info() {
 
     if (!nftApproved) return
 
-  
+
     setStage(nextStage(stage))
 
 
@@ -109,7 +106,7 @@ export default function Info() {
 
     if (!signer) return
 
-   
+
     let assetTokenApproved = await approveTransferOfAssetToken(signer, config.dexAddress!, config.tokenAddress!)
 
     if (!assetTokenApproved) return
@@ -126,7 +123,6 @@ export default function Info() {
     let locked = await lockNFT(signer, config)
     if (!locked) return
 
-    console.log("successfully locked the NFT")
     setStage(nextStage(stage))
 
   }
@@ -138,7 +134,6 @@ export default function Info() {
     let locked = await addLiquidity(signer, config)
     if (!locked) return
 
-    console.log("successfully locked the NFT")
     setStage(nextStage(stage))
 
   }
@@ -161,7 +156,7 @@ export default function Info() {
     } else if (stage === "approvalNFT") {
       //Blockchain function to create dex
       await approvalNFT()
-    }else if (stage === "approvalToken") {
+    } else if (stage === "approvalToken") {
       //Blockchain function to create dex
       await approvalToken()
     } else if (stage === "lock") {
@@ -355,7 +350,8 @@ export default function Info() {
 
                     Please approve the creation of the DEX contract for this NFT.
                     This contract manages all the liquidity pool functions for tokenization of this particular NFT
-
+                    <br />
+                    (Please check injected wallet for transaction status while pending)
                   </div>
                 </> : stage === "createSupabase" ?
                   <>
@@ -363,6 +359,8 @@ export default function Info() {
 
                       Please approve the creation of the DEX contract for this NFT.
                       This contract manages all the liquidity pool functions for tokenization of this particular NFT
+                      <br />
+                      (Please check injected wallet for transaction status while pending)
 
                     </div>
                   </> : stage === "approvalNFT" ?
@@ -370,14 +368,18 @@ export default function Info() {
                       <div className="mt-10 py-10 text-gray-700">
 
                         Please approve the Dex to transfer and manage your NFT and its custom fractional tokens.
-                        
+                        <br />
+                        (Please check injected wallet for transaction status while pending)
+
                       </div>
                     </> : stage === "approvalToken" ?
                       <>
                         <div className="mt-10 py-10 text-gray-700">
 
                           Please approve the DEX tokens to transfer and manage this NFTs custom fractional tokens.
-                         
+                          <br />
+                          (Please check injected wallet for transaction status while pending)
+
                         </div>
                       </> : stage === "lock" ?
                         <>
@@ -386,18 +388,23 @@ export default function Info() {
                             Please approve the trasnfer of the NFT from your wallet to the DEX contract, locking the NFT.
                             <br />
                             The NFT can be unlocked and re-trasnferred back into your account at anytime
+                            <br />
+                            (Please check injected wallet for transaction status while pending)
+
                           </div>
                         </> : stage === "liquidity" ?
                           <>
                             <div className="mt-10 py-10 text-gray-700">
 
                               Please approve the initial liquidity trasnfer into the pool to successfully finalixe the creation of a DEX for this NFT
+                              <br />
+                              (Please check injected wallet for transaction status while pending)
 
                             </div>
                           </> : stage === "Done" ?
                             <div className=''>
                               <br />
-                              {config.nftAddress && <NFTSummary nft = {newFractionToSupabase(config)} onlyDisplay/>}
+                              {config.nftAddress && <NFTSummary nft={newFractionToSupabase(config)} onlyDisplay />}
                               <div className="mt-10 py-1 text-gray-700 w-full items-center flex justify-center">
                                 <Confetti numberOfPieces={100} initialVelocityY={20} opacity={0.5} width={window.innerWidth} height={window.innerHeight} />
 

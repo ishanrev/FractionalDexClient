@@ -7,18 +7,21 @@ import { Database } from '../../../../types/supabase'
 import { PaperClipIcon } from '@heroicons/react/20/solid'
 import Copy from '../General/Copy'
 import { ProviderContext } from '@/Functions/Contexts'
-import { addLiquidity, getMinTokensForAddingLiquidity, getTokenBalance } from '@/Functions/BlockchainFunctions'
+import { addLiquidity, approveTransferOfAssetToken, getMinTokensForAddingLiquidity, getTokenBalance } from '@/Functions/BlockchainFunctions'
 import { truncateValue } from '@/Functions/General'
 import { useDebounce } from '@/Functions/Hooks'
+import { addFractionalOwner } from '@/Functions/SupabaseFuncs'
 
 function AddLiquidity({
+  nft,
   dexAddress,
   tokenAddress,
   isOpen,
   setIsOpen,
   setReloadShares
 }: {
-  tokenAddress:string,
+  nft: Database['public']['Tables']['nfts']['Row'],
+  tokenAddress: string,
   dexAddress: string,
   isOpen: boolean,
   setIsOpen: Dispatch<SetStateAction<boolean>>,
@@ -26,9 +29,9 @@ function AddLiquidity({
 
 
 }) {
-  const {debounce} = useDebounce()
+  const { debounce } = useDebounce()
   const { provider, setProvider } = useContext(ProviderContext)
-  const [ minimum, setMinimum ] = useState<string>("")
+  const [minimum, setMinimum] = useState<string>("")
   const [liquidity, setLiquidity] = useState<{
     initialLiquidityTokens: string,
     initialLiquidityValue: string
@@ -36,13 +39,13 @@ function AddLiquidity({
     initialLiquidityTokens: "",
     initialLiquidityValue: ""
   })
-  const handleEthChange = async (value:string) => {
+  const handleEthChange = async (value: string) => {
     try {
       let signer = await provider?.getSigner();
-      if(!signer) throw("No Signer Available")
-      let newMinimum = await getMinTokensForAddingLiquidity(provider!, signer, value, dexAddress, tokenAddress )
+      if (!signer) throw ("No Signer Available")
+      let newMinimum = await getMinTokensForAddingLiquidity(provider!, signer, value, dexAddress, tokenAddress)
       setMinimum(newMinimum)
-    }catch(error){
+    } catch (error) {
       console.log(error)
     }
   }
@@ -59,10 +62,15 @@ function AddLiquidity({
     try {
       let signer = await provider?.getSigner()
       if (!signer) throw ("No provider available")
-      console.log({
-        dexAddress,
-        ...liquidity
-      })
+      let account = await signer.getAddress()
+      if (!nft?.fractional_owners?.includes(account)) {
+        let approvalResponse = await approveTransferOfAssetToken(signer, account, tokenAddress)
+        let updateOwners = await addFractionalOwner(dexAddress, [...nft.fractional_owners!, account])
+        if (!approvalResponse) {
+          throw ("")
+        }
+      }
+      
       let res = await addLiquidity(signer, {
         dexAddress,
         ...liquidity
@@ -129,8 +137,8 @@ function AddLiquidity({
                   </label>
                   <div className="mt-2">
                     <input
-                      onChange={(e) => { 
-                        setLiquidity({ ...liquidity, initialLiquidityValue: e.target.value }) 
+                      onChange={(e) => {
+                        setLiquidity({ ...liquidity, initialLiquidityValue: e.target.value })
                         debouncedMinimumTokens(e.target.value)
                       }}
                       value={liquidity.initialLiquidityValue}

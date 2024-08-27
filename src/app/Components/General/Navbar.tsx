@@ -38,7 +38,6 @@ export default function Navbar() {
   const setCurrentNavbarOption = (updatedPath: string) => {
     let tempNav = navigation;
     for (let x = 0; x < tempNav.length; x++) {
-      console.log(updatedPath, tempNav[x].href)
       if (updatedPath === tempNav[x].href) {
         tempNav[x].current = true;
       } else {
@@ -46,7 +45,6 @@ export default function Navbar() {
       }
     }
 
-    console.log(tempNav)
     setNavigation([...tempNav])
 
   }
@@ -62,7 +60,6 @@ export default function Navbar() {
   }, [isConnected, accountChanged])
 
   useEffect(() => {
-    console.log("changed")
     setCurrentNavbarOption(pathName)
   }, [pathName])
 

@@ -203,6 +203,7 @@ export async function approveTransferOfAssetToken(signer:Signer, dexAddress:stri
 		const approveResponse:ContractTransactionResponse = await nftContract.approve(dexAddress,maxTokensInWei )
 		const receipt = await approveResponse.wait()
 		
+		
 		return true
 	}catch(error){
 		console.log(error)

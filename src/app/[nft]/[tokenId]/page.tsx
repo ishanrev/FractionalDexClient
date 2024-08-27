@@ -6,7 +6,7 @@ import { ethers, BrowserProvider, TransactionRequest } from "ethers";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
 import { addLiquidity, approveTransferOfAssetToken, getMainForTokens, getTokenBalance, getTokensForMain, swapMainForTokens, swapTokensForMain } from "@/Functions/BlockchainFunctions";
-import { getListOfNfts, getNft } from "@/Functions/SupabaseFuncs";
+import { addFractionalOwner, getListOfNfts, getNft } from "@/Functions/SupabaseFuncs";
 import { useParams } from "next/navigation";
 import { NFTInfo, Transaction } from "../../../../types/general";
 import { Database } from "../../../../types/supabase";
@@ -72,10 +72,7 @@ export default function NFTProfile() {
 
 	const params = useParams()
 	useEffect(() => {
-		console.log(nft)
-		console.log(provider)
 		if (params) {
-			console.log(params)
 			fetchNFT(params)
 		}
 	}, [])
@@ -84,7 +81,6 @@ export default function NFTProfile() {
 		try {
 			const tempNFT = await getNft(params.nft, params.tokenId)
 			setNft(tempNFT)
-			console.log(tempNFT)
 		} catch (nftError) {
 			console.log(nftError)
 			setNft(null)
@@ -95,16 +91,16 @@ export default function NFTProfile() {
 	function onEthChange(event: any) {
 		const { value } = event.target;
 		setEthValue(value)
-		console.log(event.target.value)
 		debouncedEthSearch(value)
 
 	}
 	function onTokenChange(event: any) {
 		const { value } = event.target;
 		setTokenValue(value)
-		console.log(event.target.value)
 		debouncedNativeSearch(value)
 	}
+
+	
 
 	async function swap() {
 		try {
@@ -117,6 +113,8 @@ export default function NFTProfile() {
 				//Checks if the current user is one of the fractional owners, if not they need approval themselves
 				if (!nft?.fractional_owners?.includes(account)) {
 					let approvalResponse = await approveTransferOfAssetToken(signer, account, nft?.token_address!)
+					let updateOwners = await addFractionalOwner(nft.dex_address!, [...nft.fractional_owners!, account])
+
 					if(!approvalResponse){
 						throw("")
 					}
@@ -129,7 +127,6 @@ export default function NFTProfile() {
 
 					res = await swapMainForTokens(signer, nft?.dex_address, ethValue)
 				}
-				console.log(res)
 				setSwapping(false)
 				setTransaction({
 					success: true
@@ -150,7 +147,7 @@ export default function NFTProfile() {
 
 	return (
 		<main className="flex bg-white min-h-screen flex-col items-center w-screen justify-between p-10  xl:px-48">
-			{nft && <AddLiquidity tokenAddress={nft.token_address!} setReloadShares={setReloadShares} dexAddress={nft.dex_address!} isOpen={addLiquidity} setIsOpen={setAddLiquidity} />}
+			{nft && <AddLiquidity nft={nft} tokenAddress={nft.token_address!} setReloadShares={setReloadShares} dexAddress={nft.dex_address!} isOpen={addLiquidity} setIsOpen={setAddLiquidity} />}
 			{nft && <NFTNotification setSwapping={setSwapping} swapping={swapping} tokenValue={tokenValue} ethValue={ethValue} type={type} transaction={transaction} nft={nft} />}
 			{nft &&
 				<div className="mt-8 grid grid-cols-3  gap-8 2xl:max-w-[70%]">
