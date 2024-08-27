@@ -14,7 +14,6 @@ import { ProviderContext } from "@/Functions/Contexts";
 import { HeartIcon, PlusCircleIcon, PlusIcon } from "@heroicons/react/24/outline";
 import useWindowDimensions from "@/Functions/Hooks";
 import { useRouter } from "next/navigation";
-declare var window: any
 type SharesTableRow = {
   image: string,
   tokens: number,
