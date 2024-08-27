@@ -21,7 +21,7 @@ import { ProviderContext } from '@/Functions/Contexts'
 import { calculateProgress, nextStage, pastUploadStage, toIPFS } from '@/Functions/General'
 import Image from 'next/image'
 import { addNFTRow } from '@/Functions/SupabaseFuncs'
-import { useIsMount } from '@/Functions/Hooks'
+import useWindowDimensions, { useIsMount } from '@/Functions/Hooks'
 import { Line } from 'rc-progress'
 import Link from 'next/link'
 import Confetti from 'react-confetti'
@@ -33,7 +33,7 @@ export default function Info() {
   const [config, setConfig] = useState<NewFraction>({})
   const [stage, setStage] = useState<UploadStages>("loadNFT")
   const isMount = useIsMount()
-
+  const {width, height} = useWindowDimensions()
   const USER_INPUT_STAGES = ["loadNFT", "basicValues"]
 
   //Stages
@@ -406,7 +406,7 @@ export default function Info() {
                               <br />
                               {config.nftAddress && <NFTSummary nft={newFractionToSupabase(config)} onlyDisplay />}
                               <div className="mt-10 py-1 text-gray-700 w-full items-center flex justify-center">
-                                <Confetti numberOfPieces={100} initialVelocityY={20} opacity={0.5} width={window.innerWidth} height={window.innerHeight} />
+                                <Confetti numberOfPieces={100} initialVelocityY={20} opacity={0.5} width={width} height={height} />
 
                                 <div className=' flex flex-col gap-6 items-center'>
                                   <span>You have successfully created the NFT DEX</span>
