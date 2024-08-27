@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import { useRef, useEffect, useState } from 'react';
+declare window as any
 export const useDebounce = () => {
   const timeout = useRef();
 
