@@ -1,7 +1,12 @@
 // @ts-nocheck
 
 import { useRef, useEffect, useState } from 'react';
-declare window as any
+declare global {
+  interface Window {
+    innerWidth:number,
+    innerHeight:number
+  }
+}
 export const useDebounce = () => {
   const timeout = useRef();
 
