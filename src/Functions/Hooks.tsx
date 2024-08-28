@@ -43,7 +43,10 @@ function getWindowDimensions() {
 }
 
 export default function useWindowDimensions() {
-  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+  const [windowDimensions, setWindowDimensions] = useState({
+    width:null,
+    height:null
+  });
 
   useEffect(() => {
     function handleResize() {
