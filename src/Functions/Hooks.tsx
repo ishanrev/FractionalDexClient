@@ -1,5 +1,5 @@
 // @ts-nocheck
-
+'use client'
 import { useRef, useEffect, useState } from 'react';
 declare global {
   interface Window {
@@ -47,6 +47,13 @@ export default function useWindowDimensions() {
 
   useEffect(() => {
     function handleResize() {
+
+      
+      setWindowDimensions(getWindowDimensions());
+    }
+
+    if (windowDimensions === null) {
+      // Set actual dimensions after mounting
       setWindowDimensions(getWindowDimensions());
     }
 
