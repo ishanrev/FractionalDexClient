@@ -406,7 +406,7 @@ export default function Info() {
                               <br />
                               {config.nftAddress && <NFTSummary nft={newFractionToSupabase(config)} onlyDisplay />}
                               <div className="mt-10 py-1 text-gray-700 w-full items-center flex justify-center">
-                                <Confetti numberOfPieces={100} initialVelocityY={20} opacity={0.5} width={width} height={height} />
+                                <Confetti numberOfPieces={100} initialVelocityY={20} opacity={0.5} width={width??0} height={height??0} />
 
                                 <div className=' flex flex-col gap-6 items-center'>
                                   <span>You have successfully created the NFT DEX</span>

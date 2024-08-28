@@ -105,7 +105,7 @@ export default function Home() {
                   <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-500">
                     Ownership
                   </th>
-                  {width > SCREENS.sm &&
+                  {width && width> SCREENS.sm &&
                     <>
 
                       <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-500">
@@ -127,7 +127,7 @@ export default function Home() {
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{truncateValue(share.tokens.toString()) + ' ' + share.tokenSymbol}</td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{truncateValue(share.ownership.toString())}</td>
 
-                    {width > SCREENS.sm &&
+                    {width && width> SCREENS.sm &&
                       <>
 
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">2</td>

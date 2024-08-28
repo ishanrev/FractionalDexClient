@@ -43,7 +43,10 @@ function getWindowDimensions() {
 }
 
 export default function useWindowDimensions() {
-  const [windowDimensions, setWindowDimensions] = useState({
+  const [windowDimensions, setWindowDimensions] = useState<{
+    width:number|null,
+    height:number|null
+  }>({
     width:null,
     height:null
   });

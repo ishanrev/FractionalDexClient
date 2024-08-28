@@ -155,8 +155,8 @@ export default function NFTProfile() {
 
 						{nft?.metadata?.image && nft?.metadata?.image !== "" &&
 							<Image src={toIPFS(nft?.metadata?.image)}
-								width={width > SCREENS.sm ? 420 : 250}
-								height={width > SCREENS.sm ? 160 : 80}
+								width={width &&width > SCREENS.sm ? 420 : 250}
+								height={width &&width > SCREENS.sm ? 160 : 80}
 								className="  rounded-md whitespace-nowrap   text-sm text-gray-300"
 								alt="NFT Image"
 							/>}
