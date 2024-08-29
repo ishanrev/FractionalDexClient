@@ -142,7 +142,7 @@ export default function Home() {
                 ))}
               </tbody>
             </table>
-            {myShares && myShares.length === 0 &&
+            {(!isConnected|| myShares && myShares.length === 0) &&
               <div className="w-full flex justify-center ">
                 <div className="flex flex-col gap-2 items-center">
                   <br />
