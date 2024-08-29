@@ -58,10 +58,11 @@ export default function useWindowDimensions() {
       setWindowDimensions(getWindowDimensions());
     }
 
-    if (windowDimensions === null) {
+    
       // Set actual dimensions after mounting
+      console.log("setting")
       setWindowDimensions(getWindowDimensions());
-    }
+    
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);

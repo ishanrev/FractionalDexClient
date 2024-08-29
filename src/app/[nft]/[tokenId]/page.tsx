@@ -150,7 +150,7 @@ export default function NFTProfile() {
 			{nft && <AddLiquidity nft={nft} tokenAddress={nft.token_address!} setReloadShares={setReloadShares} dexAddress={nft.dex_address!} isOpen={addLiquidity} setIsOpen={setAddLiquidity} />}
 			{nft && <NFTNotification setSwapping={setSwapping} swapping={swapping} tokenValue={tokenValue} ethValue={ethValue} type={type} transaction={transaction} nft={nft} />}
 			{nft &&
-				<div className="mt-8 grid grid-cols-3  gap-8 2xl:max-w-[70%]">
+				<div className="mt-8 grid grid-cols-3  gap-8 2xl:max-w-[80%]">
 					<div className=" overflow-hidden col-span-3 sm:col-span-3 md:col-span-1 lg:flex lg:flex-col justify-start items-center  w-full  rounded-lg">
 
 						{nft?.metadata?.image && nft?.metadata?.image !== "" &&
