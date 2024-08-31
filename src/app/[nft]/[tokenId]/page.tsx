@@ -232,18 +232,16 @@ export default function NFTProfile() {
 						<div className="flex flex-col sm:w-1/2">
 
 							<div className="flex w-full ">
-								<div className="flex flex-col py-4 gap-4 h-3/5 w-1/2 ">
+								<div className="py-4 gap-4 h-3/5 w-1/2 ">
 
-									<div className="px-4 sm:px-0">
+									<div className="px-4 sm:px-0 mb-4">
 										<h3 className="text-base font-semibold leading-7 text-gray-500">List of Owners</h3>
 									</div>
 									<div className="overflow-y-scroll no-scrollbar">
 										{nft?.fractional_owners && nft.fractional_owners.map((owner, index) => {
 											return (
 												<div key={index}>
-													<span className="p-1">
 														<Copy text={owner} length={8} />
-													</span>
 
 												</div>
 											)
@@ -252,18 +250,16 @@ export default function NFTProfile() {
 
 
 								</div>
-								<div className="flex flex-col py-4 gap-4 h-3/5 w-1/2 ">
+								<div className="py-4 gap-4 h-3/5 w-1/2 ">
 
-									<div className="px-4 sm:px-0">
+									<div className="px-4 sm:px-0 mb-4">
 										<h3 className="text-base font-semibold leading-7 text-gray-500">Liquidity Providers</h3>
 									</div>
 									<div className="overflow-y-scroll no-scrollbar">
 										{nft?.liquidity_providers && nft.liquidity_providers.map((owner, index) => {
 											return (
 												<div key={index}>
-													<span className="p-1">
 														<Copy text={owner} length={8} />
-													</span>
 
 												</div>
 											)

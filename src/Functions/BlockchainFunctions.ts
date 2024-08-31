@@ -23,7 +23,6 @@ export async function getTokenBalance(signer:Signer, accountAddress:string, toke
 	const tokenContract:Contract = new ethers.Contract(tokenAddress, AssetToken.abi, signer)
 	
 	const balance = await tokenContract.balanceOf(accountAddress);
-	console.log(balance)
 
 	const decimals = await tokenContract.decimals()
 	const totalSupply = await tokenContract.totalSupply()
@@ -114,10 +113,7 @@ export const connectToWalet = async (
 			await providerTemp.send("eth_requestAccounts", [])
 			const signer: Signer = await providerTemp.getSigner()
 			const address = await signer.getAddress()
-			console.log("MetaMask connected", address)
-			console.log(providerTemp)
 			
-			console.log("going to setProvider")
 			setProvider && setProvider(providerTemp)
 			
 			setIsConnected && setIsConnected(true)
@@ -140,9 +136,7 @@ export const fetchNFT = async (signer:Signer|null, nftAddress:string, tokenId:st
 		const nftContract:Contract = new ethers.Contract(nftAddress, ERC721ABI ,signer);
 		const tokenURI:string = await nftContract.tokenURI(tokenId)
 		const owner:string = await nftContract.ownerOf(tokenId)
-		console.log(tokenURI)
 		let res = await axios.get(toIPFS(tokenURI));
-		console.log(res)
 		return {metadata:res.data, owner}||null
 	}catch(fetchError){
 		console.log(fetchError)
@@ -159,13 +153,10 @@ export const deployDex = async (signer:Signer |null, tokenName:string, tokenSymb
 		]
 		const dexContractFactory:ContractFactory = new ethers.ContractFactory(NFTDex.abi, NFTDex.bytecode, signer )
 		const dex = await dexContractFactory.deploy(...deployArgs)
-		console.log(dex)
 		const receipt = await dex.deploymentTransaction()?.wait()
-		console.log(receipt?.contractAddress)
 
 		const dexContract = new ethers.Contract(receipt?.contractAddress??"", NFTDex.abi, signer)
 		const tokenAddress = await dexContract.assetToken();
-		console.log(tokenAddress)
 		if(!receipt || !receipt.contractAddress || !tokenAddress){
 			throw("Still not deploying the contract properly")
 		}
@@ -196,7 +187,6 @@ export async function approveTransferOfNFT(signer:Signer, dexAddress:string,nftA
 //here dexAddress ciuld be the user address as well
 export async function approveTransferOfAssetToken(signer:Signer, dexAddress:string, tokenAddress:string) : Promise<boolean>{
 	try{
-		console.log(signer, dexAddress, tokenAddress)
 		const account = await signer.getAddress()
 		const nftContract:Contract = new ethers.Contract(tokenAddress, AssetToken.abi, signer)
 		const maxTokensInWei = ethers.parseUnits(MAX_TRANSFER_TOKENS)

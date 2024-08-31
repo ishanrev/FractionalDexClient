@@ -61,6 +61,10 @@ export default function Info() {
       alert("You can't have spaces in the token symbol")
       return
     }
+
+    if(!(parseInt(config.initialLiquidityTokens)<0.9*parseInt(config.numFractionalTokens))){
+      alert("Number of initial Liquidity tokens for the DEX cannot be more than 90% of the total supply")
+    }
     setStage(nextStage(stage))
   }
 
@@ -385,9 +389,9 @@ export default function Info() {
                         <>
                           <div className="mt-10 py-10 text-gray-700">
 
-                            Please approve the trasnfer of the NFT from your wallet to the DEX contract, locking the NFT.
+                            Please approve the transfer of the NFT from your wallet to the DEX contract, locking the NFT.
                             <br />
-                            The NFT can be unlocked and re-trasnferred back into your account at anytime
+                            The NFT can be unlocked and re-transferred back into your account at anytime
                             <br />
                             (Please check injected wallet for transaction status while pending)
 
@@ -396,7 +400,7 @@ export default function Info() {
                           <>
                             <div className="mt-10 py-10 text-gray-700">
 
-                              Please approve the initial liquidity trasnfer into the pool to successfully finalixe the creation of a DEX for this NFT
+                              Please approve the initial liquidity transfer into the pool to successfully finalize the creation of a DEX for this NFT
                               <br />
                               (Please check injected wallet for transaction status while pending)
 
