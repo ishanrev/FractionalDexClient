@@ -130,7 +130,7 @@ export default function Home() {
                     {width && width> SCREENS.sm &&
                       <>
 
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">2</td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">-</td>
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
                           <Link href={`/${share.nftCollectionAddress}/${share.tokenId}`}
                             className=" p-4 py-2 text-gray-500 hover:text-button-secondary rounded-lg bg-gray-200">
